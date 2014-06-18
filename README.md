@@ -1,6 +1,7 @@
 cms
 ===
 Cooperative Management System
+
 this repo is for student purposes only
 
 HOW TO USE
