@@ -6,4 +6,4 @@ this repo is for student purposes only
 
 HOW TO USE
 
-download and open CMS(Microsoft Visual Studio Solution)
+download and open CMS.sln (Microsoft Visual Studio Solution)
