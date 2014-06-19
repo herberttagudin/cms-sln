@@ -118,20 +118,36 @@
       <DependentUpon>ShareCapitalContribution.cs</DependentUpon>
     </Compile>
     <Compile Include="Loan Management\Transaction\Controller\LoanApplicationController.cs" />
+    <Compile Include="Loan Management\Transaction\Controller\MembershipApplicationController.cs" />
     <Compile Include="Loan Management\Transaction\Controller\ShareCapitalContributionController.cs" />
+    <Compile Include="Loan Management\Transaction\Controller\UpdateMemberController.cs" />
     <Compile Include="Loan Management\Transaction\Model\LoanApplicationModel.cs" />
+    <Compile Include="Loan Management\Transaction\Model\MembershipApplicationModel.cs" />
     <Compile Include="Loan Management\Transaction\Model\ShareCapitalContributionModel.cs" />
+    <Compile Include="Loan Management\Transaction\Model\UpdateMemberModel.cs" />
     <Compile Include="Loan Management\Transaction\View\LoanApplication.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Loan Management\Transaction\View\LoanApplication.designer.cs">
       <DependentUpon>LoanApplication.cs</DependentUpon>
     </Compile>
+    <Compile Include="Loan Management\Transaction\View\MembershipApplication.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Loan Management\Transaction\View\MembershipApplication.designer.cs">
+      <DependentUpon>MembershipApplication.cs</DependentUpon>
+    </Compile>
     <Compile Include="Loan Management\Transaction\View\ShareCapitalContribution.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Loan Management\Transaction\View\ShareCapitalContribution.designer.cs">
       <DependentUpon>ShareCapitalContribution.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Loan Management\Transaction\View\UpdateMember.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Loan Management\Transaction\View\UpdateMember.designer.cs">
+      <DependentUpon>UpdateMember.cs</DependentUpon>
     </Compile>
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
@@ -143,17 +159,17 @@
     <Compile Include="Main\Controller\PaymentController.cs" />
     <Compile Include="Main\MainData.cs" />
     <Compile Include="Main\Model\PaymentModel.cs" />
-    <Compile Include="Main\View\PaymentForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Main\View\PaymentForm.Designer.cs">
-      <DependentUpon>PaymentForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Main\View\CMS.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Main\View\CMS.Designer.cs">
       <DependentUpon>CMS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Main\View\PaymentForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Main\View\PaymentForm.designer.cs">
+      <DependentUpon>PaymentForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Savings\Transaction\Controller\TerminationController.cs" />
     <Compile Include="Savings\Transaction\Model\TerminationModel.cs" />
@@ -290,17 +306,23 @@
     <EmbeddedResource Include="Loan Management\Transaction\View\LoanApplication.resx">
       <DependentUpon>LoanApplication.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Loan Management\Transaction\View\MembershipApplication.resx">
+      <DependentUpon>MembershipApplication.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Loan Management\Transaction\View\ShareCapitalContribution.resx">
       <DependentUpon>ShareCapitalContribution.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Loan Management\Transaction\View\UpdateMember.resx">
+      <DependentUpon>UpdateMember.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Main\View\PaymentForm.resx">
-      <DependentUpon>PaymentForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Main\View\CMS.resx">
       <DependentUpon>CMS.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main\View\PaymentForm.resx">
+      <DependentUpon>PaymentForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Savings\Transaction\View\MemberTermination.resx">
       <DependentUpon>MemberTermination.cs</DependentUpon>

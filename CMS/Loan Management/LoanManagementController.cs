@@ -71,7 +71,7 @@ namespace CMS.Loan_Management
         //trans
         public void itemMemberProfile(object args, EventArgs e)
         {
-            //Transaction.Controller.MembershipApplicationController membershipController = new Transaction.Controller.MembershipApplicationController(new Transaction.Model.MembershipApplicationModel(), new Transaction.View.MembershipApplication(), this.loanManagementMenu);
+            Transaction.Controller.UpdateMemberController membershipController = new Transaction.Controller.UpdateMemberController(new Transaction.Model.UpdateMemberModel(), new Transaction.View.UpdateMember(), this.loanManagementMenu);
         }
 
         public void itemLoanApp(object args, EventArgs e)
