@@ -13,6 +13,108 @@ namespace CMS.Loan_Management.Transaction.Model
 {
     class LoanApplicationModel
     {
+        public int selectPaymentDatesWithInterestRates(int loanApplicationId, String firstDate, String secondDate)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select count(ORNo) from PAYMENT where hasInterest = 1 and LoanApplicationId = " + "'" + loanApplicationId + "'" + " and PaymentDate between " + "'" + firstDate + "'" + "and " + "'" + secondDate + "'";
+            int i = Convert.ToInt32(dal.executeScalar(sql));
+            return i;
+        }
+
+        public String selectInterestPerLoanType(int loanTypeId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select concat(InterestRateStatus,' ',InterestRateValue,' ',Per) from LOAN_INTEREST_RATE where (CURRENT_TIMESTAMP >= ActivationDate) and Status = 1 and isArchived = 0 and LoanTypeId =" + "'" + loanTypeId + "'";
+            String interest = Convert.ToString(dal.executeScalar(sql));
+            return interest;
+        }
+
+        public DataSet selectPenaltiesPerLoanType(int loanTypeId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select PenaltyName, GracePeriod, Amount, AmountStatus, Penalty.Deduction, DurationValue, DurationStatus from Penalty, LOAN_TYPE_PENALTY where Penalty.PenaltyId = LOAN_TYPE_PENALTY.PenaltyId and Penalty.Status = 1 and Penalty.isArchived=0 and LOAN_TYPE_PENALTY.LoanTypeId = " + "'" + loanTypeId + "'";
+            DataSet ds = dal.executeDataSet(sql);
+            return ds;
+        }
+
+        public DataSet selectMonthlyAmortization(int loanApplicationId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select distinct LOAN_AMORTIZATION.Amount, LOAN_INFORMATION.PaymentDurationStatus from LOAN_AMORTIZATION, LOAN_INFORMATION WHERE LOAN_AMORTIZATION.LoanApplicationId = LOAN_INFORMATION.LoanApplicationId and LOAN_INFORMATION.LoanApplicationId = " + "'" + loanApplicationId + "'";
+            DataSet ds = dal.executeDataSet(sql);
+            return ds;
+        }
+
+        public String selectMaturityDate(int loanApplicationId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select MaturityDate from LOAN_INFORMATION where LoanApplicationId = " + "'" + loanApplicationId + "'";
+            String mdate = Convert.ToString(dal.executeScalar(sql));
+            return mdate;
+        }
+
+        public double selectRemainingBalance(int loanApplicationId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select sum(Amount) from loan_amortization where isPaid = 0 and LoanApplicationId = " + "'" + loanApplicationId + "'";
+            double amount = Convert.ToDouble(dal.executeScalar(sql));
+            return amount;
+        }
+
+        public double selectGrantedLoanAmount(int loanApplicationId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select ApprovedAmount from loan_INFORMATION where loanapplicationid = " + "'" + loanApplicationId + "'";
+            double amount = Convert.ToDouble(dal.executeScalar(sql));
+            return amount;
+        }
+        public DataSet selectAmortizations(String accountNo, int loanTypeId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select LOAN_AMORTIZATION.isPaid as 'Check to Pay', (Select count(AmortizationId) from LOAN_INFORMATION, LOAN_AMORTIZATION WHERE LOAN_INFORMATION.LoanApplicationId=LOAN_AMORTIZATION.LoanApplicationId and LOAN_INFORMATION.isCleared = 0 and LOAN_AMORTIZATION.isPaid = 1 and LOAN_INFORMATION.AccountNo = " + "'" + accountNo + "'" + " and LOAN_INFORMATION.LoanTypeId = " + "'" + loanTypeId + "'" + ")+ row_number() OVER (PARTITION BY LOAN_AMORTIZATION.LoanApplicationId ORDER BY LOAN_AMORTIZATION.LoanApplicationId) Amortization#, LOAN_AMORTIZATION.Amount, LOAN_AMORTIZATION.AmortizationDueDate as 'Due Date', Loan_INFORMATION.LoanApplicationId from LOAN_INFORMATION, LOAN_AMORTIZATION WHERE LOAN_INFORMATION.LoanApplicationId=LOAN_AMORTIZATION.LoanApplicationId and LOAN_INFORMATION.isCleared = 0 and LOAN_AMORTIZATION.isPaid = 0 and LOAN_INFORMATION.AccountNo = " + "'" + accountNo + "'" + " and LOAN_INFORMATION.LoanTypeId = " + "'" + loanTypeId + "'";
+            DataSet ds = dal.executeDataSet(sql);
+            return ds;
+        }
+
+        public String selectUnclearedLoanType(int loanApplicationId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select concat(LOAN_INFORMATION.LoanTypeId,' ',LOAN_TYPE.LoanTypeName) from LOAN_INFORMATION, LOAN_TYPE where LOAN_INFORMATION.LoanTypeId = LOAN_TYPE.LoanTypeId and LOAN_INFORMATION.LoanApplicationId = " + "'" + loanApplicationId + "'";
+            String loanType = Convert.ToString(dal.executeScalar(sql));
+            return loanType;
+        }
+
+        public int selectUnclearedLoan(String accountNo)
+        {
+            try
+            {
+                DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+                String sql = "Select LoanApplicationId from LOAN_INFORMATION where isCleared = 0 and AccountNo = " + "'" + accountNo + "'";
+                int lappId = Convert.ToInt32(dal.executeScalar(sql));
+                return lappId;
+            }
+            catch (Exception) { return 0; }
+        }
+
+        public String selectInterestRate(int loanTypeId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "Select concat(InterestRateValue,' ',InterestRateStatus) as 'Interest Rate' from LOAN_INTEREST_RATE where status=1 and isArchived = 0 and loanTypeId =" + "'" + loanTypeId + "'";
+            String interest = Convert.ToString(dal.executeScalar(sql));
+            return interest;
+        }
+
+        public DataSet selectActiveCharges(int LoanTypeId)
+        {
+            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
+            String sql = "SELECT c.ChargeId, c.Amount as 'Amount',c.ChargeName as 'Charge Name', c.AmountStatus as 'Amount Status' from CHARGES c INNER JOIN LOAN_TYPE_CHARGES ltc on c.ChargeId = ltc.ChargeId AND c.Status=1 AND c.isArchived=0 AND ltc.LoanTypeId = @searchName";
+            Dictionary<String, Object> parameters = new Dictionary<string, object>();
+            parameters.Add("@searchName", LoanTypeId);
+            DataSet ds = dal.executeDataSet(sql, parameters);
+
+            return ds;
+
+        }
 
         public Boolean selectSavingsStatus(int memberTypeNo) 
         {
@@ -20,18 +122,6 @@ namespace CMS.Loan_Management.Transaction.Model
             String sql = "Select hasSavings from MEMBER_TYPE WHERE MemberTypeNo =" + "'" + memberTypeNo + "'";
             Boolean hasSavings = Convert.ToBoolean(dal.executeScalar(sql));
             return hasSavings;
-        }
-
-        public int selectPendingLoans(String accountNo)
-        {
-            try
-            {
-                DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-                String sql = "Select count(isPending) from LOAN_APPLICATION WHERE isPending = 1 and AccountNo = " + "'" + accountNo + "'";
-                int noOfPendingLoans = Convert.ToInt32(dal.executeScalar(sql));
-                return noOfPendingLoans;
-            }
-            catch (Exception) { return 0; }
         }
 
         public int selectPreviousEligibility(int loanTypeId)
@@ -53,7 +143,7 @@ namespace CMS.Loan_Management.Transaction.Model
         public DataSet selectLoanTypeUnpaid(String accountNo)
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Select LOAN_APPLICATION.LoanTypeId FROM LOAN_APPLICATION, LOAN_APPROVED where LOAN_APPLICATION.LoanApplicationId= LOAN_APPROVED.LoanApplicationId and LOAN_APPROVED.isCleared = 0 and LOAN_APPLICATION.AccountNo = " + "'" + accountNo + "'";
+            String sql = "Select LOAN_INFORMATION.LoanTypeId FROM LOAN_INFORMATION where LOAN_INFORMATION.isCleared = 0 and LOAN_INFORMATION.AccountNo = " + "'" + accountNo + "'";
             DataSet ds = dal.executeDataSet(sql);
             return ds;
         }
@@ -98,18 +188,10 @@ namespace CMS.Loan_Management.Transaction.Model
             return spouse;
         }
 
-        public int selectNoOfDependents(String accountNo)
-        {
-            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Select NoOfDependents from MEMBER WHERE AccountNo = " + "'" + accountNo + "'";
-            int dependents = Convert.ToInt32(dal.executeScalar(sql));
-            return dependents;
-        }
-
         public int selectLoanApprovedCount(String accountNo)
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Select count(LOAN_APPROVED.LoanApplicationId)+1 from Member, LOAN_APPLICATION, LOAN_APPROVED where Member.AccountNo=LOAN_APPLICATION.AccountNo AND LOAN_APPLICATION.LoanApplicationId=LOAN_APPROVED.LoanApplicationId and LOAN_APPLICATION.AccountNo= " + "'" + accountNo + "'";
+            String sql = "Select count(LoanApplicationId)+1 from LOAN_INFORMATION where AccountNo = " + "'" + accountNo + "'";
             int loanCount = Convert.ToInt32(dal.executeScalar(sql));
             return loanCount;
         }
@@ -138,14 +220,6 @@ namespace CMS.Loan_Management.Transaction.Model
             catch (Exception) { return "0"; }
         }
 
-        public Boolean checkIfLoanIsFixed(int loanTypeId)
-        {
-            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Select isFixed from LOAN_TYPE where LoanTypeId = " + "'" + loanTypeId + "'";
-            Boolean isFixed = Convert.ToBoolean(dal.executeScalar(sql));
-            return isFixed;
-        }
-
         public int checkIfLoanHasComakers(int loanTypeId)
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
@@ -165,15 +239,7 @@ namespace CMS.Loan_Management.Transaction.Model
         public DataSet selectActiveMemberWithLoan()
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Select distinct Member.AccountNo as 'Account No.', concat(Member.FirstName,' ',Member.MiddleName,' ',Member.LastName) as 'Name', MEMBER_TYPE.Description as 'Member Type', MEMBER_TYPE.MemberTypeNo from Member, Member_Type, Payment where Member.MemberTypeNo=Member_Type.MemberTypeNo and Member.AccountNo = Payment.AccountNo and Member_Type.hasLoan=1 and Member_Type.MinimumAge >= 18 and Member.Status=1 and Payment.PaymentType = 'Membership' and Payment.isFullyPaid = 1 and Member.AccountNo not in (Select AccountNo from Termination)";
-            DataSet ds = dal.executeDataSet(sql);
-            return ds;
-        }
-
-        public DataSet selectRequirements(int loanTypeId)
-        {
-            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Select LOAN_REQUIREMENT.RequirementNo, LOAN_REQUIREMENT.Description, LOAN_REQUIREMENT.Necessity from LOAN_REQUIREMENT, LOAN_TYPE_REQUIREMENT WHERE LOAN_REQUIREMENT.RequirementNo=LOAN_TYPE_REQUIREMENT.RequirementNo AND LOAN_REQUIREMENT.isArchived=0 AND LOAN_REQUIREMENT.Status=1 AND LOAN_TYPE_REQUIREMENT.LoanTypeId="+ "'" + loanTypeId + "'";
+            String sql = "Select distinct Member.AccountNo as 'Account No.', concat(Member.FirstName,' ',Member.MiddleName,' ',Member.LastName) as 'Name', MEMBER_TYPE.Description as 'Member Type', MEMBER_TYPE.MemberTypeNo from Member, Member_Type where Member.MemberTypeNo=Member_Type.MemberTypeNo and Member_Type.hasLoan=1 and Member_Type.MinimumAge >= 18 and Member.Status=1 and Member.AccountNo not in (Select AccountNo from Termination)";
             DataSet ds = dal.executeDataSet(sql);
             return ds;
         }
@@ -181,7 +247,7 @@ namespace CMS.Loan_Management.Transaction.Model
         public DataSet selectLoanType(int memberTypeNo)
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Select LOAN_TYPE.LoanTypeId as 'LoanTypeId', LOAN_TYPE.LoanTypeName as 'LoanTypeName' from LOAN_TYPE, LOAN_TYPE_AVAILABILITY, LOAN_TYPE_REQUIREMENT, MEMBER_TYPE WHERE LOAN_TYPE_AVAILABILITY.MemberTypeNo=MEMBER_TYPE.MemberTypeNo and LOAN_TYPE_AVAILABILITY.LoanTypeId=LOAN_TYPE.LoanTypeId and LOAN_TYPE.LoanTypeId = LOAN_TYPE_REQUIREMENT.LoanTypeId and Member_Type.hasLoan = 1 and Loan_Type.isArchived=0 and Loan_Type.Status=1 and Member_Type.MemberTypeNo = "+ "'" + memberTypeNo + "'"+" GROUP BY LOAN_TYPE.LoanTypeId, LOAN_TYPE.LoanTypeName HAVING count(LOAN_TYPE_REQUIREMENT.LoanTypeId) >0 ";
+            String sql = "Select LOAN_TYPE.LoanTypeId as 'LoanTypeId', LOAN_TYPE.LoanTypeName as 'LoanTypeName' from LOAN_TYPE, LOAN_TYPE_AVAILABILITY, LOAN_INTEREST_RATE, MEMBER_TYPE WHERE LOAN_TYPE_AVAILABILITY.MemberTypeNo=MEMBER_TYPE.MemberTypeNo and LOAN_TYPE_AVAILABILITY.LoanTypeId=LOAN_TYPE.LoanTypeId and LOAN_TYPE.LoanTypeId = LOAN_INTEREST_RATE.LoanTypeId and LOAN_INTEREST_RATE.isArchived = 0 and Member_Type.hasLoan = 1 and Loan_Type.isArchived=0 and Loan_Type.Status=1 and Member_Type.MemberTypeNo = " + "'" + memberTypeNo + "'" + " order by LOAN_TYPE.LoanTypeName";
             DataSet ds = dal.executeDataSet(sql);
             return ds;
         }
@@ -242,95 +308,32 @@ namespace CMS.Loan_Management.Transaction.Model
             return ds;
         }
 
-
-        public int insertIncome(double MonthlyIncome,double SpouseIncome,double OtherSources,double NetMonthlyIncome)
+        public int insertLoanApplication(String AccountNo, int LoanTypeId, String Purpose, String PaymentDurationStatus, int PaymentDurationValue, String Terms, double LoanAmount, double ApprovedAmount, String DateFiled, String DateApproved, String DateMaturity, double NetLoan)
         {
 
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC insertIncome @MonthlyIncome, @SpouseIncome, @OtherSources, @NetMonthlyIncome";
-            Dictionary<String, Object> parameters = new Dictionary<string, object>();
-            parameters.Add("@MonthlyIncome", MonthlyIncome);
-            parameters.Add("@SpouseIncome", SpouseIncome);
-            parameters.Add("@OtherSources", OtherSources);
-            parameters.Add("@NetMonthlyIncome", NetMonthlyIncome);
-            dal.executeNonQuery(sql, parameters);
-
-            String sql2 = "select max(IncomeId) from income";
-            int incomeId = Convert.ToInt32(dal.executeScalar(sql2));
-            return incomeId;
-
-
-        }
-
-        public int insertExpense(double Food, double Water, double Electricity, double TuitionFees, double Rent, double Transportation, double LoanRepayment, double CellphoneOrTelephone, double Miscellaneous, double MonthlyExpenses)
-        {
-
-            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC insertExpense @Food,@Water,@Electricity,@TuitionFees,@Rent,@Transportation,@LoanRepayment,@CellphoneOrTelephone,@Miscellaneous,@MonthlyExpenses";
-            Dictionary<String, Object> parameters = new Dictionary<string, object>();
-            parameters.Add("@Food", Food);
-            parameters.Add("@Water", Water);
-            parameters.Add("@Electricity", Electricity);
-            parameters.Add("@TuitionFees", TuitionFees);
-            parameters.Add("@Rent", Rent);
-            parameters.Add("@Transportation", Transportation);
-            parameters.Add("@LoanRepayment", LoanRepayment);
-            parameters.Add("@CellphoneOrTelephone", CellphoneOrTelephone);
-            parameters.Add("@Miscellaneous", Miscellaneous);
-            parameters.Add("@MonthlyExpenses", MonthlyExpenses);
-            dal.executeNonQuery(sql, parameters);
-
-            String sql2 = "select max(ExpenseId) from Expense";
-            int expenseId = Convert.ToInt32(dal.executeScalar(sql2));
-            return expenseId;
-
-        }
-
-        public int insertLoanApplication(String AccountNo, int IncomeId, int ExpenseId, int LoanTypeId, Boolean isLoanAgainstDeposit, int SourceOfFund, String Purpose, String PaymentDurationStatus, int PaymentDurationValue, String Terms, double LoanAmount, String DateFiled)
-        {
-
-            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC insertLoanApplication @AccountNo, @IncomeId, @ExpenseId, @LoanTypeId, @isLoanAgainstDeposit, @SourceOfFund, @Purpose, @PaymentDurationStatus, @PaymentDurationValue, @Terms, @LoanAmount, @DateFiled";
+            String sql = "EXEC insertLoanInformation @AccountNo,@LoanTypeId,@Purpose,@PaymentDurationStatus,@PaymentDurationValue,@Terms,@LoanAmount,@ApprovedAmount,@DateFiled,@DateApproved,@MaturityDate,@NetLoanProceeds";
             Dictionary<String, Object> parameters = new Dictionary<string, object>();
             parameters.Add("@AccountNo", AccountNo);
-            parameters.Add("@IncomeId", IncomeId);
-            parameters.Add("@ExpenseId", ExpenseId);
             parameters.Add("@LoanTypeId", LoanTypeId);
-            parameters.Add("@isLoanAgainstDeposit", isLoanAgainstDeposit);
-            parameters.Add("@SourceOfFund", SourceOfFund);
             parameters.Add("@Purpose", Purpose);
             parameters.Add("@PaymentDurationStatus", PaymentDurationStatus);
             parameters.Add("@PaymentDurationValue", PaymentDurationValue);
             parameters.Add("@Terms", Terms);
             parameters.Add("@LoanAmount", LoanAmount);
+            parameters.Add("@ApprovedAmount", ApprovedAmount);
             parameters.Add("@DateFiled", DateFiled);
+            parameters.Add("@DateApproved", DateApproved);
+            parameters.Add("@MaturityDate", DateMaturity);
+            parameters.Add("@NetLoanProceeds", NetLoan);
             dal.executeNonQuery(sql, parameters);
 
-            String sql2 = "select max(LoanApplicationId) from Loan_Application";
+            String sql2 = "select max(LoanApplicationId) from Loan_Information";
             int loanApplicationId = Convert.ToInt32(dal.executeScalar(sql2));
             return loanApplicationId;
 
         }
 
-        public void insertLoanApplicationRequirements(int RequirementNo, int LoanApplicationId, Boolean isPassed )
-        {
-
-            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC insertLoanApplicationRequirement @RequirementNo, @LoanApplicationId, @isPassed";
-            Dictionary<String, Object> parameters = new Dictionary<string, object>();
-            parameters.Add("@RequirementNo", RequirementNo);
-            parameters.Add("LoanApplicationId", LoanApplicationId);
-            parameters.Add("@isPassed", isPassed);
-            dal.executeNonQuery(sql, parameters);
-
-        }
-
-        public void updateLoanApplicationRequirements(int RequirementNo, int LoanApplicationId)
-        {
-            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Update LOANAPPLICATION_REQUIREMENTS set isPassed = 1 where LoanApplicationId="+LoanApplicationId+" and RequirementNo ="+RequirementNo;
-            dal.executeScalar(sql);
-        }
 
         public void insertCollateral(int LoanApplicationId, String SerialNo, String Name, String Condition, String Description, String YearAcquired, double AcquiredAmount)
         {
@@ -365,14 +368,18 @@ namespace CMS.Loan_Management.Transaction.Model
             dal.executeNonQuery(sql, parameters);
         }
 
-
-        public void updateTimeDeposit(int certNo)
+        public void insertLoanAmortization(int LappId, String dueDate, double amount)
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "Update TIME_DEPOSIT set isHold = 1 where CertificateNo = " + "'"+certNo+"'";
-            dal.executeScalar(sql);
-        }
+            String sql = "EXEC insertLoanAmortization @LoanApplicationId,@AmortizationDueDate, @Amount";
+            Dictionary<String, Object> parameters = new Dictionary<string, object>();
+            parameters.Add("@LoanApplicationId", LappId);
+            parameters.Add("@AmortizationDueDate", dueDate);
+            parameters.Add("@Amount", amount);
 
+            dal.executeNonQuery(sql, parameters);
+
+        }
 
     }
 }

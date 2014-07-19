@@ -22,15 +22,11 @@ namespace CMS.Loan_Management.Maintenance.View
             this.comboAccountType.SelectedIndex = -1;
             this.txtContribution.Clear();
             this.comboContribution.SelectedIndex = -1;
-            this.txtPenalty.Clear();
-            this.comboCharge.SelectedIndex = -1;
             this.Status.CheckState = CheckState.Unchecked;
 
             this.comboAccountType.Enabled = true;
             this.txtContribution.Enabled = true;
             this.comboContribution.Enabled = true;
-            this.txtPenalty.Enabled = true;
-            this.comboCharge.Enabled = true;
             this.Status.Enabled = true;
             this.btnSave.Enabled = true;
             this.btnCancel.Enabled = true;
@@ -44,15 +40,11 @@ namespace CMS.Loan_Management.Maintenance.View
             this.comboAccountType.SelectedIndex = -1;
             this.txtContribution.Clear();
             this.comboContribution.SelectedIndex = -1;
-            this.txtPenalty.Clear();
-            this.comboCharge.SelectedIndex = -1;
             this.Status.CheckState = CheckState.Unchecked;
 
             this.comboAccountType.Enabled = false;
             this.txtContribution.Enabled = false;
             this.comboContribution.Enabled = false;
-            this.txtPenalty.Enabled = false;
-            this.comboCharge.Enabled = false;
             this.Status.Enabled = false;
             this.btnSave.Enabled = false;
             this.btnCancel.Enabled = false;
@@ -77,7 +69,7 @@ namespace CMS.Loan_Management.Maintenance.View
             this.comboAccountType.ValueMember = "MemberTypeNo";
             this.comboAccountType.DisplayMember = "Description";
 
-            if (comboAccountType.Items.Count == 0) { i = 1; }
+            if (comboAccountType.Items.Count == 0) { i = -1; }
             return i;
         }
 
@@ -109,26 +101,6 @@ namespace CMS.Loan_Management.Maintenance.View
         public String getComboContrib()
         {
             return this.comboContribution.SelectedItem.ToString();
-        }
-
-        public void setPenalty(String s)
-        {
-            this.txtPenalty.Text = s;
-        }
-
-        public double getPenalty()
-        {
-            return double.Parse(this.txtPenalty.Text.ToString());
-        }
-
-        public void setComboCharge(String s)
-        {
-            this.comboCharge.SelectedItem = s;
-        }
-
-        public String getComboCharge()
-        {
-            return this.comboCharge.Text.ToString();
         }
 
         public void setStatus()
@@ -163,6 +135,7 @@ namespace CMS.Loan_Management.Maintenance.View
             this.dataCapitalContribution.DataSource = ds.Tables[0];
             this.dataCapitalContribution.Columns[0].Visible = false;
             this.dataCapitalContribution.Columns[1].Visible = false;
+            this.dataCapitalContribution.Columns[6].Visible = false;
         }
 
         public DataGridViewRow getSelected()
@@ -183,9 +156,7 @@ namespace CMS.Loan_Management.Maintenance.View
         {
             this.lblMemberType.ForeColor = System.Drawing.Color.Black;
             this.lblCapitalContrib.ForeColor = System.Drawing.Color.Black;
-            this.lblPenalty.ForeColor = System.Drawing.Color.Black;
-            this.lblBasis.ForeColor = System.Drawing.Color.Black;
-           
+            this.lblDuration.ForeColor = System.Drawing.Color.Black;
         }
 
         private void txtContribution_KeyDown(object sender, KeyEventArgs e)
@@ -267,5 +238,62 @@ namespace CMS.Loan_Management.Maintenance.View
                 }
             }
         }
+
+        public void cbShowArchive_CheckStateChanged(EventHandler e)
+        {
+            this.cbShowArchive.Click += e;
+        }
+
+        public bool checkArchivedState()
+        {
+            this.btnEdit.Enabled = true;
+
+            if (this.cbShowArchive.CheckState == CheckState.Checked)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public DataGridViewRowCollection getAllRows()
+        {
+            return this.dataCapitalContribution.Rows;
+        }
+
+        public void setArchivedColor(int i)
+        {
+            this.dataCapitalContribution.Rows[i].DefaultCellStyle.BackColor = Color.Yellow;
+            this.dataCapitalContribution.Rows[i].DefaultCellStyle.SelectionBackColor = Color.YellowGreen;
+            this.dataCapitalContribution.Rows[i].DefaultCellStyle.SelectionForeColor = SystemColors.ControlText;
+        }
+
+        public void getSelectedData()
+        {
+            DataGridViewRow selectedData = this.getSelected();
+            this.btnEdit.Enabled = true;
+
+            if (bool.Parse(selectedData.Cells["isArchived"].Value.ToString()))
+            {
+                this.btnEdit.Enabled = false;
+            }
+        }
+
+        private void dataCapitalContribution_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up)
+            {
+                getSelectedData();
+            }
+        }
+
+        private void dataCapitalContribution_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            getSelectedData();
+        }
+
+
     }
 }

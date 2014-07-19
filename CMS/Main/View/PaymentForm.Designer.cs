@@ -263,11 +263,11 @@
             this.groupMembership.Controls.Add(this.label1);
             this.groupMembership.Controls.Add(this.dataFee);
             this.groupMembership.Controls.Add(this.btnMoveSelected);
-            this.groupMembership.Location = new System.Drawing.Point(12, 199);
+            this.groupMembership.Location = new System.Drawing.Point(10, 199);
             this.groupMembership.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupMembership.Name = "groupMembership";
             this.groupMembership.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupMembership.Size = new System.Drawing.Size(811, 290);
+            this.groupMembership.Size = new System.Drawing.Size(921, 300);
             this.groupMembership.TabIndex = 66;
             this.groupMembership.TabStop = false;
             this.groupMembership.Text = "Membership Fees";
@@ -276,7 +276,7 @@
             // 
             this.btnMoveBackAll.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnMoveBackAll.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMoveBackAll.Location = new System.Drawing.Point(333, 164);
+            this.btnMoveBackAll.Location = new System.Drawing.Point(308, 212);
             this.btnMoveBackAll.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnMoveBackAll.Name = "btnMoveBackAll";
             this.btnMoveBackAll.Size = new System.Drawing.Size(35, 30);
@@ -289,7 +289,7 @@
             // 
             this.btnMoveBackSelected.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnMoveBackSelected.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMoveBackSelected.Location = new System.Drawing.Point(333, 128);
+            this.btnMoveBackSelected.Location = new System.Drawing.Point(308, 176);
             this.btnMoveBackSelected.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnMoveBackSelected.Name = "btnMoveBackSelected";
             this.btnMoveBackSelected.Size = new System.Drawing.Size(35, 30);
@@ -302,7 +302,7 @@
             // 
             this.btnMoveAll.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnMoveAll.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMoveAll.Location = new System.Drawing.Point(332, 88);
+            this.btnMoveAll.Location = new System.Drawing.Point(307, 136);
             this.btnMoveAll.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnMoveAll.Name = "btnMoveAll";
             this.btnMoveAll.Size = new System.Drawing.Size(35, 30);
@@ -320,11 +320,11 @@
             this.dataAddedFee.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Items,
             this.clmAmt});
-            this.dataAddedFee.Location = new System.Drawing.Point(376, 48);
+            this.dataAddedFee.Location = new System.Drawing.Point(350, 48);
             this.dataAddedFee.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dataAddedFee.Name = "dataAddedFee";
             this.dataAddedFee.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataAddedFee.Size = new System.Drawing.Size(318, 146);
+            this.dataAddedFee.Size = new System.Drawing.Size(318, 235);
             this.dataAddedFee.TabIndex = 46;
             this.dataAddedFee.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataAddedFee_CellContentClick);
             // 
@@ -344,7 +344,7 @@
             // 
             this.txtChange.ContextMenuStrip = this.contextMenuBlank;
             this.txtChange.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtChange.Location = new System.Drawing.Point(495, 249);
+            this.txtChange.Location = new System.Drawing.Point(681, 224);
             this.txtChange.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtChange.Name = "txtChange";
             this.txtChange.Size = new System.Drawing.Size(199, 27);
@@ -361,7 +361,7 @@
             // 
             this.lblMPChange.AutoSize = true;
             this.lblMPChange.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMPChange.Location = new System.Drawing.Point(398, 252);
+            this.lblMPChange.Location = new System.Drawing.Point(677, 202);
             this.lblMPChange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMPChange.Name = "lblMPChange";
             this.lblMPChange.Size = new System.Drawing.Size(65, 20);
@@ -373,7 +373,7 @@
             // 
             this.txtAmount.ContextMenuStrip = this.contextMenuBlank;
             this.txtAmount.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAmount.Location = new System.Drawing.Point(154, 253);
+            this.txtAmount.Location = new System.Drawing.Point(681, 158);
             this.txtAmount.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtAmount.MaxLength = 7;
             this.txtAmount.Name = "txtAmount";
@@ -387,7 +387,7 @@
             // 
             this.lblMPAmountTendered.AutoSize = true;
             this.lblMPAmountTendered.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMPAmountTendered.Location = new System.Drawing.Point(10, 256);
+            this.lblMPAmountTendered.Location = new System.Drawing.Point(677, 136);
             this.lblMPAmountTendered.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMPAmountTendered.Name = "lblMPAmountTendered";
             this.lblMPAmountTendered.Size = new System.Drawing.Size(136, 20);
@@ -400,10 +400,10 @@
             this.txtTotalAmount.ContextMenuStrip = this.contextMenuBlank;
             this.txtTotalAmount.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTotalAmount.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.txtTotalAmount.Location = new System.Drawing.Point(495, 204);
+            this.txtTotalAmount.Location = new System.Drawing.Point(681, 88);
             this.txtTotalAmount.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtTotalAmount.Name = "txtTotalAmount";
-            this.txtTotalAmount.Size = new System.Drawing.Size(199, 35);
+            this.txtTotalAmount.Size = new System.Drawing.Size(197, 35);
             this.txtTotalAmount.TabIndex = 45;
             this.txtTotalAmount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -412,7 +412,7 @@
             this.lblMPTotal.AutoSize = true;
             this.lblMPTotal.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMPTotal.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.lblMPTotal.Location = new System.Drawing.Point(382, 204);
+            this.lblMPTotal.Location = new System.Drawing.Point(676, 63);
             this.lblMPTotal.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMPTotal.Name = "lblMPTotal";
             this.lblMPTotal.Size = new System.Drawing.Size(92, 25);
@@ -422,7 +422,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(380, 26);
+            this.label3.Location = new System.Drawing.Point(354, 26);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(106, 17);
@@ -451,7 +451,7 @@
             this.dataFee.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dataFee.Name = "dataFee";
             this.dataFee.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataFee.Size = new System.Drawing.Size(318, 146);
+            this.dataFee.Size = new System.Drawing.Size(294, 235);
             this.dataFee.TabIndex = 40;
             this.dataFee.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataFee_CellContentClick);
             // 
@@ -459,7 +459,7 @@
             // 
             this.btnMoveSelected.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnMoveSelected.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMoveSelected.Location = new System.Drawing.Point(332, 48);
+            this.btnMoveSelected.Location = new System.Drawing.Point(307, 96);
             this.btnMoveSelected.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnMoveSelected.Name = "btnMoveSelected";
             this.btnMoveSelected.Size = new System.Drawing.Size(35, 30);
@@ -499,7 +499,7 @@
             this.groupLoan.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.groupLoan.Name = "groupLoan";
             this.groupLoan.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.groupLoan.Size = new System.Drawing.Size(813, 300);
+            this.groupLoan.Size = new System.Drawing.Size(921, 300);
             this.groupLoan.TabIndex = 69;
             this.groupLoan.TabStop = false;
             this.groupLoan.Text = "Loan Payment";
@@ -540,7 +540,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(610, 94);
+            this.label2.Location = new System.Drawing.Point(730, 92);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(54, 17);
@@ -550,7 +550,7 @@
             // txtInterest
             // 
             this.txtInterest.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtInterest.Location = new System.Drawing.Point(693, 92);
+            this.txtInterest.Location = new System.Drawing.Point(813, 90);
             this.txtInterest.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtInterest.Name = "txtInterest";
             this.txtInterest.Size = new System.Drawing.Size(100, 29);
@@ -561,7 +561,7 @@
             // 
             this.lblPenalty.AutoSize = true;
             this.lblPenalty.Font = new System.Drawing.Font("Segoe UI Semibold", 12.25F, System.Drawing.FontStyle.Bold);
-            this.lblPenalty.Location = new System.Drawing.Point(360, 58);
+            this.lblPenalty.Location = new System.Drawing.Point(439, 61);
             this.lblPenalty.Name = "lblPenalty";
             this.lblPenalty.Size = new System.Drawing.Size(174, 23);
             this.lblPenalty.TabIndex = 60;
@@ -571,7 +571,7 @@
             // 
             this.txtAMChange.ContextMenuStrip = this.contextMenuBlank;
             this.txtAMChange.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAMChange.Location = new System.Drawing.Point(571, 258);
+            this.txtAMChange.Location = new System.Drawing.Point(691, 256);
             this.txtAMChange.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtAMChange.Name = "txtAMChange";
             this.txtAMChange.ReadOnly = true;
@@ -581,12 +581,12 @@
             // 
             // txtPenaltyList
             // 
-            this.txtPenaltyList.Location = new System.Drawing.Point(364, 91);
+            this.txtPenaltyList.Location = new System.Drawing.Point(443, 87);
             this.txtPenaltyList.Multiline = true;
             this.txtPenaltyList.Name = "txtPenaltyList";
             this.txtPenaltyList.ReadOnly = true;
             this.txtPenaltyList.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtPenaltyList.Size = new System.Drawing.Size(196, 196);
+            this.txtPenaltyList.Size = new System.Drawing.Size(237, 196);
             this.txtPenaltyList.TabIndex = 53;
             this.txtPenaltyList.WordWrap = false;
             // 
@@ -594,7 +594,7 @@
             // 
             this.lblCMChange.AutoSize = true;
             this.lblCMChange.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCMChange.Location = new System.Drawing.Point(567, 233);
+            this.lblCMChange.Location = new System.Drawing.Point(687, 231);
             this.lblCMChange.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCMChange.Name = "lblCMChange";
             this.lblCMChange.Size = new System.Drawing.Size(65, 20);
@@ -605,7 +605,7 @@
             // 
             this.txtAMAmountTendered.ContextMenuStrip = this.contextMenuBlank;
             this.txtAMAmountTendered.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAMAmountTendered.Location = new System.Drawing.Point(571, 201);
+            this.txtAMAmountTendered.Location = new System.Drawing.Point(691, 199);
             this.txtAMAmountTendered.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtAMAmountTendered.MaxLength = 7;
             this.txtAMAmountTendered.Name = "txtAMAmountTendered";
@@ -618,7 +618,7 @@
             // 
             this.lblCMAmountTendered.AutoSize = true;
             this.lblCMAmountTendered.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCMAmountTendered.Location = new System.Drawing.Point(567, 176);
+            this.lblCMAmountTendered.Location = new System.Drawing.Point(687, 174);
             this.lblCMAmountTendered.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCMAmountTendered.Name = "lblCMAmountTendered";
             this.lblCMAmountTendered.Size = new System.Drawing.Size(136, 20);
@@ -630,7 +630,7 @@
             this.txtTotalAmortization.ContextMenuStrip = this.contextMenuBlank;
             this.txtTotalAmortization.Font = new System.Drawing.Font("Segoe UI Semibold", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTotalAmortization.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.txtTotalAmortization.Location = new System.Drawing.Point(666, 123);
+            this.txtTotalAmortization.Location = new System.Drawing.Point(786, 121);
             this.txtTotalAmortization.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtTotalAmortization.Name = "txtTotalAmortization";
             this.txtTotalAmortization.Size = new System.Drawing.Size(127, 35);
@@ -642,7 +642,7 @@
             this.lblCMTotal.AutoSize = true;
             this.lblCMTotal.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblCMTotal.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.lblCMTotal.Location = new System.Drawing.Point(566, 130);
+            this.lblCMTotal.Location = new System.Drawing.Point(686, 128);
             this.lblCMTotal.Name = "lblCMTotal";
             this.lblCMTotal.Size = new System.Drawing.Size(92, 25);
             this.lblCMTotal.TabIndex = 54;
@@ -656,10 +656,10 @@
             this.dataAmortization.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataAmortization.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataAmortization.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
-            this.dataAmortization.Location = new System.Drawing.Point(11, 58);
+            this.dataAmortization.Location = new System.Drawing.Point(18, 52);
             this.dataAmortization.Name = "dataAmortization";
             this.dataAmortization.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataAmortization.Size = new System.Drawing.Size(343, 232);
+            this.dataAmortization.Size = new System.Drawing.Size(419, 232);
             this.dataAmortization.TabIndex = 52;
             this.dataAmortization.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataAmortization_CellContentClick);
             // 
@@ -677,7 +677,7 @@
             // txtPenalty
             // 
             this.txtPenalty.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPenalty.Location = new System.Drawing.Point(693, 61);
+            this.txtPenalty.Location = new System.Drawing.Point(813, 59);
             this.txtPenalty.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtPenalty.Name = "txtPenalty";
             this.txtPenalty.Size = new System.Drawing.Size(100, 29);
@@ -687,7 +687,7 @@
             // txtAmountDue
             // 
             this.txtAmountDue.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAmountDue.Location = new System.Drawing.Point(681, 28);
+            this.txtAmountDue.Location = new System.Drawing.Point(801, 26);
             this.txtAmountDue.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtAmountDue.Name = "txtAmountDue";
             this.txtAmountDue.Size = new System.Drawing.Size(112, 29);
@@ -698,7 +698,7 @@
             // 
             this.lblAddPenalty.AutoSize = true;
             this.lblAddPenalty.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAddPenalty.Location = new System.Drawing.Point(580, 67);
+            this.lblAddPenalty.Location = new System.Drawing.Point(700, 65);
             this.lblAddPenalty.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblAddPenalty.Name = "lblAddPenalty";
             this.lblAddPenalty.Size = new System.Drawing.Size(93, 17);
@@ -709,7 +709,7 @@
             // 
             this.lblAmountDue.AutoSize = true;
             this.lblAmountDue.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAmountDue.Location = new System.Drawing.Point(567, 31);
+            this.lblAmountDue.Location = new System.Drawing.Point(687, 29);
             this.lblAmountDue.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblAmountDue.Name = "lblAmountDue";
             this.lblAmountDue.Size = new System.Drawing.Size(106, 21);
@@ -790,7 +790,7 @@
             this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "PaymentForm";
-            this.Size = new System.Drawing.Size(833, 511);
+            this.Size = new System.Drawing.Size(960, 511);
             this.groupPayment.ResumeLayout(false);
             this.groupPayment.PerformLayout();
             this.groupSearch.ResumeLayout(false);

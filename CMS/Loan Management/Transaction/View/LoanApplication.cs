@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace CMS.Loan_Management.Transaction.View
 {
@@ -29,10 +30,10 @@ namespace CMS.Loan_Management.Transaction.View
         {
             this.tcLoanApp.SelectTab(this.tpPersonal);
 
-            this.tpIncome.Enabled = false;
             this.tpDetails.Enabled = false;
             this.tpComaker.Enabled = false;
             this.tpCollaterals.Enabled = false;
+            this.tpApproval.Enabled = false;
             this.btnApplyLoan.Enabled = false;
             this.btnCancelLoan.Enabled = false;
 
@@ -56,33 +57,6 @@ namespace CMS.Loan_Management.Transaction.View
             //tpPersonal-end
 
 
-            //tpIncome-start
-
-            this.txtMonthlyIncome.Text = String.Empty;
-            this.txtSpouseIncome.Text = String.Empty;
-            this.txtOtherSources.Text = String.Empty;
-            this.txtGrossIncome.Text = "0";
-            this.txtLessMonthlyExpense.Text = "0";
-            this.txtNetMonthlyIncome.Text = "0";
-
-            this.txtChildrenDependents.Text = String.Empty;
-            this.txtFood.Text = String.Empty;
-            this.txtWater.Text = String.Empty;
-            this.txtElectricity.Text = String.Empty;
-            this.txtTuition.Text = String.Empty;
-            this.txtRent.Text = String.Empty;
-            this.txtTransporation.Text = String.Empty;
-            this.txtLoanRepayment.Text = String.Empty;
-            this.txtTelephone.Text = String.Empty;
-            this.txtMiscellaneous.Text = String.Empty;
-            this.txtMonthlyExpenses.Text = "0";
-
-            this.txtSpouseIncome.Enabled = true;
-            this.txtChildrenDependents.Enabled = true;
-
-            //tpIncome-end
-
-
             //tpDetails-start
 
 
@@ -92,8 +66,6 @@ namespace CMS.Loan_Management.Transaction.View
             this.udPaymentDuration.Value = 0;
             this.cbDurationStatus.SelectedValue = -1;
             this.cbTerms.SelectedIndex = -1;
-            this.cbSourceOfFund.SelectedIndex=-1;
-            this.clbRequirements.Items.Clear();
             this.lblStateMaxLoanAmount.Visible = false;
             this.lblStatePaymentDuration.Visible = false;
             this.cbLoanType.SelectedIndex = -1;
@@ -101,8 +73,6 @@ namespace CMS.Loan_Management.Transaction.View
             this.txtLoanCount.Text = String.Empty;
             this.txtLoanAmount.Text = String.Empty;
             this.txtPurpose.Text = String.Empty;
-            this.txtCurrentBalance.Text = String.Empty;
-            this.gbLoanAgainstDeposit.Enabled = false;
 
             //tpDetails-end
 
@@ -146,6 +116,22 @@ namespace CMS.Loan_Management.Transaction.View
             this.udYearAcquired.Maximum = DateTime.Now.Year;
 
             //tpCollateral-end
+
+
+            //tpApproval-start
+
+            this.clbCharges.Items.Clear();
+            this.txtMaturityDate.Clear();
+            this.txtAmount.Text = "0.00";
+            this.txtCharges.Text = "0.00";
+            this.txtBalance.Text = "0.00";
+            this.txtPenalty.Text = "0.00"; ;
+            this.txtInterestRate.Text = "0.00";
+            this.txtNetLoan.Text = "0.00";
+            this.rtbLoanBalDetails.Clear();
+            this.chbLoanBalance.Checked = false;
+
+            //tpApproval-end
            
         }
 
@@ -153,11 +139,6 @@ namespace CMS.Loan_Management.Transaction.View
         {
             this.txtCurrentTotSavings.Text = "0";
             this.txtCurrentTotSavings.Enabled = false;
-        }
-
-        public void disableSpouseIncome() 
-        {
-            this.txtSpouseIncome.Enabled = false;
         }
 
         public void setCMMemberNameUnchecked() 
@@ -331,25 +312,14 @@ namespace CMS.Loan_Management.Transaction.View
 
         public void btnProceedFunc() 
         {
-            this.tcLoanApp.SelectTab(this.tpIncome);
-            this.tpIncome.Enabled = true;
             this.btnCancelLoan.Enabled = true;
-        }
-
-        public void btnIncomePreviousFunc() 
-        {
-            this.tcLoanApp.SelectTab(this.tpPersonal);
-        }
-
-        public void btnIncomeNextFunc() 
-        {
             this.tcLoanApp.SelectTab(this.tpDetails);
             this.tpDetails.Enabled = true;
         }
 
         public void btnDetailsPreviousFunc() 
         {
-            this.tcLoanApp.SelectTab(this.tpIncome);
+            this.tcLoanApp.SelectTab(this.tpPersonal);
         }
 
         public void btnDetailsNextFunc() 
@@ -367,7 +337,6 @@ namespace CMS.Loan_Management.Transaction.View
         {
             this.tcLoanApp.SelectTab(this.tpComaker);
             this.tpComaker.Enabled = true;
-            this.btnApplyLoan.Enabled = true;
         }
 
         public void btnComakerPreviousFunc() 
@@ -375,13 +344,18 @@ namespace CMS.Loan_Management.Transaction.View
             this.tcLoanApp.SelectTab(this.tpCollaterals);
         }
 
-        public void noCollateralAndComakerFunc() 
+        public void btnApprovalPreviousFunc() 
         {
-            this.btnDetailsNext.Enabled = false;
-            this.btnApplyLoan.Enabled = true;
-            this.tpCollaterals.Enabled = false;
-            this.tpComaker.Enabled = false;
+            this.tcLoanApp.SelectTab(this.tpComaker);
         }
+
+        public void btnComakerNextFunc() 
+        {
+            this.tcLoanApp.SelectTab(this.tpApproval);
+            this.tpApproval.Enabled = true;
+            this.btnApplyLoan.Enabled = true;
+        }
+
 
         public void noComakerFunc() 
         {
@@ -392,7 +366,6 @@ namespace CMS.Loan_Management.Transaction.View
         public void setBtnDetailsNext() 
         {
             this.btnDetailsNext.Enabled = true;
-            this.btnApplyLoan.Enabled = false;
         }
 
         public void setBtnAddCollateralEventHandler(EventHandler e)
@@ -430,6 +403,16 @@ namespace CMS.Loan_Management.Transaction.View
             this.btnComakerPrevious.Click += e;
         }
 
+        public void setBtnComakerNextEventHandler(EventHandler e)
+        {
+            this.btnComakerNext.Click += e;
+        }
+
+        public void setBtnApprovalPreviousEventHandler(EventHandler e)
+        {
+            this.btnApprovalPrevious.Click += e;
+        }
+
         public void setBtnDeleteCollateralEventHandler(EventHandler e)
         {
             this.btnDeleteCollateral.Click += e;
@@ -450,15 +433,6 @@ namespace CMS.Loan_Management.Transaction.View
             this.btnEditCollateral.Click += e;
         }
 
-        public void setBtnIncomeNextEventHandler(EventHandler e)
-        {
-            this.btnIncomeNext.Click += e;
-        }
-
-        public void setBtnIncomePreviousEventHandler(EventHandler e)
-        {
-            this.btnIncomePrevious.Click += e;
-        }
 
         public void setBtnProceedEventHandler(EventHandler e)
         {
@@ -814,11 +788,6 @@ namespace CMS.Loan_Management.Transaction.View
 
         //numeric up down-start
 
-        public void setChildrenDependents(int i)
-        {
-            this.txtChildrenDependents.Text = i.ToString();
-        }
-
         public void setYearAcquired(int i)
         {
             this.udYearAcquired.Value = i;
@@ -841,6 +810,31 @@ namespace CMS.Loan_Management.Transaction.View
         
         //combobox-start
 
+        public void editTerms()
+        {
+            cbTerms.Items.Clear();
+
+            if (cbDurationStatus.SelectedItem.ToString() == "week/s")
+            {
+                cbTerms.Items.Add("weekly");
+            }
+
+            else if (cbDurationStatus.SelectedItem.ToString() == "month/s")
+            {
+                cbTerms.Items.Add("weekly");
+                cbTerms.Items.Add("monthly");
+            }
+
+            else if (cbDurationStatus.SelectedItem.ToString() == "year/s")
+            {
+                cbTerms.Items.Add("weekly");
+                cbTerms.Items.Add("monthly");
+                cbTerms.Items.Add("quarterly");
+                cbTerms.Items.Add("semi-annually");
+                cbTerms.Items.Add("annually");
+            }
+        }
+
         public void addItemsAtTypeOfLoan(DataSet ds)
         {
             this.cbLoanType.DataSource = ds.Tables[0];
@@ -851,31 +845,13 @@ namespace CMS.Loan_Management.Transaction.View
 
         public int getTypeOfLoan()
         {
-            DataRowView drv = (DataRowView)this.cbLoanType.SelectedItem;
-            int valueOfItem = int.Parse(drv["LoanTypeId"].ToString());
-            return valueOfItem;
-        }
-
-        public int addItemsAtSourceOfFund(DataSet ds)
-        {
-            int i = 0;
-            this.cbSourceOfFund.DataSource = ds.Tables[0];
-            this.cbSourceOfFund.ValueMember = "CertificateNo";
-            this.cbSourceOfFund.DisplayMember = "CertificateNo";
-
-            if (cbSourceOfFund.Items.Count == 0) { i = 1; }
-            return i;
-        }
-
-        public int getSourceOfFund()
-        {
             try
             {
-                DataRowView drv = (DataRowView)this.cbSourceOfFund.SelectedItem;
-                int valueOfItem = int.Parse(drv["CertificateNo"].ToString());
+                DataRowView drv = (DataRowView)this.cbLoanType.SelectedItem;
+                int valueOfItem = int.Parse(drv["LoanTypeId"].ToString());
                 return valueOfItem;
             }
-            catch (Exception) { return 0; }
+            catch (Exception) { return -1; }
         }
 
         public String getDurationStatus()
@@ -893,34 +869,14 @@ namespace CMS.Loan_Management.Transaction.View
             return this.cbLoanType.SelectedIndex;
         }
 
-        public int getCBLADIndex()
-        {
-            return this.cbSourceOfFund.SelectedIndex;
-        }
-
         public void setCBLoanTypeIndex() 
         {
             this.cbLoanType.SelectedIndex = -1;
         }
 
-        public void setCBLADIndex()
-        {
-            this.cbSourceOfFund.SelectedIndex = -1;
-        }
-
         public void getifcbLoanTypeIndexNegOne() 
         {
             this.btnDetailsNext.Enabled = false;
-            this.clbRequirements.Items.Clear();
-            this.gbLoanAgainstDeposit.Enabled = false;
-            this.cbSourceOfFund.DataSource = null;
-            this.txtCurrentBalance.Clear();
-        }
-
-        public void disableLAD() 
-        {
-            this.cbSourceOfFund.DataSource = null;
-            this.txtCurrentBalance.Clear();
         }
 
         //combobox-end
@@ -929,39 +885,36 @@ namespace CMS.Loan_Management.Transaction.View
 
         //check/list box start
 
-        public void addItemsAtRequirements(Dictionary<int, string> requirements)
+        public void addItemsAtCharges(Dictionary<int, string> charges)
         {
-            foreach (String s in requirements.Values)
+            this.clbCharges.Items.Clear();
+
+            foreach (String s in charges.Values)
             {
-                this.clbRequirements.Items.Add(s);
+                this.clbCharges.Items.Add(s);
             }
         }
 
-        public CheckedListBox.CheckedItemCollection getCheckedRequirements()
+        public CheckedListBox.CheckedItemCollection getCheckedCharges()
         {
-            return this.clbRequirements.CheckedItems;
+            return this.clbCharges.CheckedItems;
         }
 
-
-        public void removeAllRequirements() 
+        public void clbCharges_MouseUp(MouseEventHandler e)
         {
-            this.clbRequirements.Items.Clear();
+            clbCharges.MouseUp += e;
         }
 
-        public void getUncheckedRequirements() 
-        { 
-            
+        public void clbCharges_KeyPressed(KeyPressEventHandler e) 
+        {
+            clbCharges.KeyPress += e;
         }
+
         //check/list box end
 
 
 
         //textbox-start
-
-        public void clearCurrentBalance() 
-        {
-            this.txtCurrentBalance.Clear();
-        }
 
         public void setCurrentShareCapital(String s)
         {
@@ -983,108 +936,6 @@ namespace CMS.Loan_Management.Transaction.View
             return double.Parse(this.txtCurrentTotSavings.Text);
         }
 
-        public double getMonthlyIncome()
-        {
-            try{
-                return Double.Parse(this.txtMonthlyIncome.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getSpouseIncome()
-        {
-            try{
-                return Double.Parse(this.txtSpouseIncome.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getOtherSources()
-        {
-            try{
-            return Double.Parse(this.txtOtherSources.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getFood()
-        {
-            try
-            {
-                return Double.Parse(this.txtFood.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getWater()
-        {
-            try{
-                return Double.Parse(this.txtWater.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getElectricity()
-        {
-            try{
-                return Double.Parse(this.txtElectricity.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getTuition()
-        {
-            try{
-                return Double.Parse(this.txtTuition.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getNetMonthlyIncome() 
-        {
-            return Double.Parse(this.txtNetMonthlyIncome.Text);
-        }
-
-        public double getRent()
-        {
-            try{
-            return Double.Parse(this.txtRent.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getTransportation()
-        {
-            try{
-            return Double.Parse(this.txtTransporation.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getLoanRepayment()
-        {
-            try{
-                return Double.Parse(this.txtLoanRepayment.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getTelephone()
-        {
-            try{
-            return Double.Parse(this.txtTelephone.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
-        public double getMiscellaneous()
-        {
-            try{
-                return Double.Parse(this.txtMiscellaneous.Text);
-            }
-            catch (Exception) { return 0; }
-        }
-
         public void setLoanCount(int i)
         {
             this.txtLoanCount.Text = i.ToString();
@@ -1092,7 +943,11 @@ namespace CMS.Loan_Management.Transaction.View
 
         public double getLoanAmount()
         {
-            return Double.Parse(this.txtLoanAmount.Text);
+            try
+            {
+                return Double.Parse(this.txtLoanAmount.Text);
+            }
+            catch (Exception) { return 0; }
         }
 
         public String getPurpose()
@@ -1103,11 +958,6 @@ namespace CMS.Loan_Management.Transaction.View
         public int getPurposeLength()
         {
             return this.txtPurpose.TextLength;
-        }
-
-        public void setCurrentBalance(double d)
-        {
-            this.txtCurrentBalance.Text = d.ToString();
         }
 
         public void setTitle(String s)
@@ -1230,51 +1080,6 @@ namespace CMS.Loan_Management.Transaction.View
             return this.txtMemberName.Text.ToString();
         }
 
-        
-
-                //computed Text Box
-
-        public void setGrossIncome(double d)
-        {
-            this.txtGrossIncome.Text = d.ToString();
-        }
-
-        public double getGrossIncome()
-        {
-            return double.Parse(this.txtGrossIncome.Text);
-        }
-
-        public void setLessMonthlyExpense(double d)
-        {
-            this.txtLessMonthlyExpense.Text = d.ToString();
-        }
-
-        public double getLessMonthlyExpense()
-        {
-            return double.Parse(this.txtLessMonthlyExpense.Text);
-        }
-
-        public void setNetMonthlyIncome(double d)
-        {
-            this.txtNetMonthlyIncome.Text = d.ToString();
-        }
-
-        public double getNetMonthlyExpense()
-        {
-            return double.Parse(this.txtNetMonthlyIncome.Text);
-        }
-
-        public void setMonthlyExpense(double d)
-        {
-            this.txtMonthlyExpenses.Text = d.ToString();
-        }
-
-        public double getMonthlyExpense()
-        {
-            return double.Parse(this.txtMonthlyExpenses.Text);
-        }
-
-
         //textbox-ennd
 
 
@@ -1394,9 +1199,7 @@ namespace CMS.Loan_Management.Transaction.View
 
         public void setAllTpDetailsLabelsToBlack() 
         {
-            this.lblRequirementChecklist.ForeColor = Color.Black;
             this.lblLoanType.ForeColor = Color.Black;
-            this.lblSourceOfFund.ForeColor = Color.Black;
             this.lblLoanAmount.ForeColor = Color.Black;
             this.lblPurpose.ForeColor = Color.Black;
             this.lblPaymentDuration.ForeColor = Color.Black;
@@ -1434,16 +1237,6 @@ namespace CMS.Loan_Management.Transaction.View
 
        //groupbox-start
 
-        public Boolean getIfLoanAgainstDeposit() 
-        {
-            if (this.gbLoanAgainstDeposit.Enabled == true) { return true; }
-            else return false;
-        }
-
-        public void enableLoanAgainstDeposit(Boolean b) 
-        {
-            this.gbLoanAgainstDeposit.Enabled = b;
-        }
 
         //groupbox-end
 
@@ -1476,45 +1269,9 @@ namespace CMS.Loan_Management.Transaction.View
             this.txtAccountNo.TextChanged += e;
         }
 
-        public void txtExpenses_TextChanged(EventHandler e)
-        {
-            this.txtFood.TextChanged += e;
-            this.txtWater.TextChanged += e;
-            this.txtElectricity.TextChanged += e;
-            this.txtTuition.TextChanged += e;
-            this.txtRent.TextChanged += e;
-            this.txtTransporation.TextChanged += e;
-            this.txtLoanRepayment.TextChanged += e;
-            this.txtTelephone.TextChanged += e;
-            this.txtMiscellaneous.TextChanged += e;
-
-        }
-
-        public void txtMonthlyExpense_TextChanged(EventHandler e) 
-        {
-            this.txtMonthlyExpenses.TextChanged += e;
-        }
-
-        public void txtIncome_TextChanged(EventHandler e)
-        {
-            this.txtMonthlyIncome.TextChanged += e;
-            this.txtSpouseIncome.TextChanged += e;
-            this.txtOtherSources.TextChanged += e;
-        }
-
-        public void txtGrossIncome_TextChanged(EventHandler e) 
-        {
-            this.txtGrossIncome.TextChanged += e;
-        }
-
         public void cbLoanType_SelectedIndexChanged(EventHandler e) 
         {
             this.cbLoanType.SelectedIndexChanged += e;
-        }
-
-        public void cbSourceOfFund_SelectedIndexChanged(EventHandler e)
-        {
-            this.cbSourceOfFund.SelectedIndexChanged += e;
         }
         
         //textchange at kung ano ano pang change
@@ -1545,29 +1302,11 @@ namespace CMS.Loan_Management.Transaction.View
 
         }
 
+
+
         private void cbDurationStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cbTerms.Items.Clear();
 
-            if (cbDurationStatus.SelectedItem.ToString() == "week/s") 
-            {
-                cbTerms.Items.Add("weekly");
-            }
-
-            else if (cbDurationStatus.SelectedItem.ToString() == "month/s") 
-            {
-                cbTerms.Items.Add("weekly");
-                cbTerms.Items.Add("monthly");
-            }
-
-            else if (cbDurationStatus.SelectedItem.ToString() == "year/s") 
-            {
-                cbTerms.Items.Add("weekly");
-                cbTerms.Items.Add("monthly");
-                cbTerms.Items.Add("quarterly");
-                cbTerms.Items.Add("semi-annually");
-                cbTerms.Items.Add("annually");
-            }
         }
 
         private void incomeAndExpense_KeyPress(object sender, KeyPressEventArgs e)
@@ -1687,6 +1426,12 @@ namespace CMS.Loan_Management.Transaction.View
             }
         }
 
+        private void fileDate_ValueChanged(object sender, EventArgs e)
+        {
+            this.dateApproved.MinDate = fileDate.Value;
+            this.dateApproved.Value = fileDate.Value;
+        }
+
 
 
 
@@ -1694,5 +1439,251 @@ namespace CMS.Loan_Management.Transaction.View
 
 
         //other events end
+
+        //approval
+        
+        public void classGridAmortization(DataSet ds)
+        {
+            this.dataAmortization.DataSource = ds.Tables[0];
+            this.dataAmortization.Columns[4].Visible = false;
+        }
+
+        public void setMaturityDate(String s)
+        {
+            this.txtMaturityDate.Text = s;
+        }
+
+        public String getMaturityDate()
+        {
+            return this.txtMaturityDate.Text;
+        }
+
+        public void setAmount(double d)
+        {
+            this.txtAmount.Text = d.ToString("N", CultureInfo.InvariantCulture);
+        }
+
+        public double getAmount()
+        {
+            try
+            {
+                return double.Parse(this.txtAmount.Text);
+            }
+            catch (Exception) { return 0; }
+        }
+
+        public void amount_TextChanged(EventHandler e)
+        {
+            this.txtAmount.TextChanged += e;
+            this.txtCharges.TextChanged += e;
+            this.txtBalance.TextChanged += e;
+            this.txtPenalty.TextChanged += e;
+            this.txtInterestRate.TextChanged += e;
+        }
+
+        public void setCharges(double d)
+        {
+            this.txtCharges.Text = d.ToString("N", CultureInfo.InvariantCulture);
+        }
+
+        public double getCharges()
+        {
+            try
+            {
+                return double.Parse(this.txtCharges.Text);
+            }
+            catch (Exception) { return 0; }
+        }
+
+        public void setLoanBalance(double d)
+        {
+            this.txtBalance.Text = d.ToString("N", CultureInfo.InvariantCulture);
+        }
+
+        public double getLoanBalance()
+        {
+            try
+            {
+                return double.Parse(this.txtBalance.Text);
+            }
+            catch (Exception) { return 0; }
+        }
+
+        public Boolean getIfLoanBalanceIsChecked()
+        {
+            if (chbLoanBalance.Checked == true) { return true; }
+            else return false;
+        }
+
+        public void setPenalty(double d)
+        {
+            this.txtPenalty.Text = d.ToString("N", CultureInfo.InvariantCulture);
+        }
+
+        public double getPenalty()
+        {
+            try
+            {
+                return double.Parse(this.txtPenalty.Text);
+            }
+            catch (Exception) { return 0; }
+        }
+
+        public void setInterestRate(double d)
+        {
+            this.txtInterestRate.Text = d.ToString("N", CultureInfo.InvariantCulture);
+        }
+
+        public double getInterestRate()
+        {
+            try
+            {
+                return double.Parse(this.txtInterestRate.Text);
+            }
+            catch (Exception) { return 0; }
+        }
+
+        public void setNetLoan(double d)
+        {
+            this.txtNetLoan.Text = d.ToString("N", CultureInfo.InvariantCulture);
+        }
+
+        public double getNetLoan()
+        {
+            return double.Parse(this.txtNetLoan.Text);
+        }
+
+        public void clearPenaltyList()
+        {
+            this.rtbLoanBalDetails.Clear();
+        }
+
+
+        public void setPenaltyList(String s)
+        {
+            this.rtbLoanBalDetails.AppendText(s);
+            this.rtbLoanBalDetails.AppendText(Environment.NewLine);
+        }
+
+        public Boolean getIfPenaltyListIsEmpty(String s)
+        {
+            if (this.rtbLoanBalDetails.Text.Contains(s)) { return false; }
+            else return true;
+        }
+
+        public void dateApproved_ValueChanged(EventHandler e) 
+        {
+            this.dateApproved.ValueChanged += e;
+        }
+
+        public void txtLoanAmount_Leave(EventHandler e)
+        {
+            this.txtLoanAmount.Leave += e;
+        }
+
+        public void udPaymentDuration_ValueChanged(EventHandler e) 
+        {
+            this.udPaymentDuration.ValueChanged += e;
+        }
+
+        public void cbDurationStatus_SelectedIndexChanged(EventHandler e) 
+        {
+            this.cbDurationStatus.SelectedIndexChanged += e;
+        }
+
+        public void cbTerms_SelectedIndexChanged(EventHandler e) 
+        {
+            this.cbTerms.SelectedIndexChanged += e;
+        }
+
+        public void txtAmount_TextChanged(EventHandler e) 
+        {
+            this.txtAmount.TextChanged += e;
+        }
+
+        public DateTime getDateOfApproval() 
+        {
+            return this.dateApproved.Value;
+        }
+
+        private void txtLoanAmount_TextChanged(object sender, EventArgs e)
+        {
+            int selectionStart = this.txtLoanAmount.SelectionStart;
+            this.txtLoanAmount.Text = this.getLoanAmount().ToString("N2", CultureInfo.InvariantCulture);
+            if (selectionStart == txtLoanAmount.Text.Length - 2) 
+            {
+                this.txtLoanAmount.SelectionStart = txtLoanAmount.Text.Length - 2; 
+            }
+            else if (selectionStart == txtLoanAmount.Text.Length - 1)
+            {
+                this.txtLoanAmount.SelectionStart = txtLoanAmount.Text.Length - 1; 
+            }
+            else this.txtLoanAmount.SelectionStart = txtLoanAmount.Text.Length-3;
+        }
+
+        public void txtAmountChange() 
+        {
+            int selectionStart = this.txtAmount.SelectionStart;
+            this.txtAmount.Text = this.getAmount().ToString("N2", CultureInfo.InvariantCulture);
+            if (selectionStart == txtAmount.Text.Length - 1)
+            {
+                this.txtAmount.SelectionStart = txtAmount.Text.Length - 1;
+            }
+            else if (selectionStart == txtAmount.Text.Length - 2)
+            {
+                this.txtAmount.SelectionStart = txtAmount.Text.Length - 2;
+            }
+            else this.txtAmount.SelectionStart = txtAmount.Text.Length - 3;
+        }
+
+        private void txtLoanAmount_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            int length = this.txtLoanAmount.Text.Length;
+            if ((e.KeyChar < '0' || e.KeyChar > '9') && (e.KeyChar != '\b') && (e.KeyChar != '.'))
+            {
+                e.Handled = true;
+            }
+            else
+            {
+                e.Handled = false;
+            }
+
+            if (e.KeyChar == '\b' && txtLoanAmount.SelectionStart == this.txtLoanAmount.Text.Length - 2) 
+            {
+               this.txtLoanAmount.SelectionStart = this.txtLoanAmount.Text.Length - 3;
+            }
+
+            //if (e.KeyChar == '\b' && length % 4 == 0) 
+            //{
+              //  MessageBox.Show("hi");
+              //this.txtLoanAmount.SelectionStart = this.txtLoanAmount.Text.Length-2;
+            //} 
+
+            if (Char.IsDigit(e.KeyChar) && txtLoanAmount.Text.Length == 4) 
+            {
+                this.txtLoanAmount.SelectionStart = this.txtLoanAmount.Text.Length - 3;
+            }
+
+            if (e.KeyChar == '.') 
+            {
+                e.Handled = true;
+                this.txtLoanAmount.Text = this.getLoanAmount().ToString();
+                this.txtLoanAmount.SelectionStart = this.txtLoanAmount.Text.Length - 2;
+            }
+            
+        }
+
+        public void chbLoanBalance_CheckChanged(EventHandler e) 
+        {
+            this.chbLoanBalance.CheckedChanged += e;
+        }
+
+        public Boolean getLoanBalanceStatus() 
+        {
+            if (this.chbLoanBalance.Checked == true) { return true; }
+            else { return false; }
+        }
     }
+
+
 }

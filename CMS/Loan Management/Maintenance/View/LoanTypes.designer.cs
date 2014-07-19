@@ -37,10 +37,7 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.chbStatus = new System.Windows.Forms.CheckBox();
             this.btnSave = new System.Windows.Forms.Button();
-            this.chbPrevious = new System.Windows.Forms.CheckBox();
-            this.chbCurrent = new System.Windows.Forms.CheckBox();
             this.chbCollateral = new System.Windows.Forms.CheckBox();
-            this.chbFixed = new System.Windows.Forms.CheckBox();
             this.cbDeduction = new System.Windows.Forms.ComboBox();
             this.cbAmtStatus = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -53,7 +50,6 @@
             this.lblMinimumPaymentDur = new System.Windows.Forms.Label();
             this.comakersUD = new System.Windows.Forms.NumericUpDown();
             this.lblComaker = new System.Windows.Forms.Label();
-            this.lblEligibility = new System.Windows.Forms.Label();
             this.txtMaxAmt = new System.Windows.Forms.TextBox();
             this.lblOf = new System.Windows.Forms.Label();
             this.lblMaxLoanableAmt = new System.Windows.Forms.Label();
@@ -100,30 +96,26 @@
             this.panel1.Controls.Add(this.btnCancel);
             this.panel1.Controls.Add(this.chbStatus);
             this.panel1.Controls.Add(this.btnSave);
-            this.panel1.Controls.Add(this.chbPrevious);
             this.panel1.Controls.Add(this.gbAvailability);
-            this.panel1.Controls.Add(this.chbCurrent);
             this.panel1.Controls.Add(this.chbCollateral);
-            this.panel1.Controls.Add(this.chbFixed);
             this.panel1.Controls.Add(this.cbDeduction);
             this.panel1.Controls.Add(this.cbAmtStatus);
             this.panel1.Controls.Add(this.groupBox3);
             this.panel1.Controls.Add(this.comakersUD);
             this.panel1.Controls.Add(this.lblComaker);
-            this.panel1.Controls.Add(this.lblEligibility);
             this.panel1.Controls.Add(this.txtMaxAmt);
             this.panel1.Controls.Add(this.lblOf);
             this.panel1.Controls.Add(this.lblMaxLoanableAmt);
             this.panel1.Controls.Add(this.txtName);
             this.panel1.Controls.Add(this.lblName);
-            this.panel1.Location = new System.Drawing.Point(12, 227);
+            this.panel1.Location = new System.Drawing.Point(12, 225);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(678, 295);
+            this.panel1.Size = new System.Drawing.Size(678, 244);
             this.panel1.TabIndex = 5;
             // 
             // btnRetrieve
             // 
-            this.btnRetrieve.Location = new System.Drawing.Point(149, 259);
+            this.btnRetrieve.Location = new System.Drawing.Point(149, 202);
             this.btnRetrieve.Name = "btnRetrieve";
             this.btnRetrieve.Size = new System.Drawing.Size(96, 28);
             this.btnRetrieve.TabIndex = 81;
@@ -133,7 +125,7 @@
             // lblStatus
             // 
             this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(11, 263);
+            this.lblStatus.Location = new System.Drawing.Point(11, 206);
             this.lblStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(53, 21);
@@ -142,7 +134,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(569, 257);
+            this.btnCancel.Location = new System.Drawing.Point(569, 200);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(92, 32);
             this.btnCancel.TabIndex = 24;
@@ -152,7 +144,7 @@
             // chbStatus
             // 
             this.chbStatus.AutoSize = true;
-            this.chbStatus.Location = new System.Drawing.Point(72, 262);
+            this.chbStatus.Location = new System.Drawing.Point(72, 205);
             this.chbStatus.Name = "chbStatus";
             this.chbStatus.Size = new System.Drawing.Size(71, 25);
             this.chbStatus.TabIndex = 22;
@@ -161,53 +153,22 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(463, 257);
+            this.btnSave.Location = new System.Drawing.Point(463, 200);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(92, 32);
             this.btnSave.TabIndex = 23;
             this.btnSave.Text = "&Save";
             this.btnSave.UseVisualStyleBackColor = true;
             // 
-            // chbPrevious
-            // 
-            this.chbPrevious.AutoSize = true;
-            this.chbPrevious.Location = new System.Drawing.Point(104, 200);
-            this.chbPrevious.Name = "chbPrevious";
-            this.chbPrevious.Size = new System.Drawing.Size(407, 25);
-            this.chbPrevious.TabIndex = 20;
-            this.chbPrevious.Text = "The loan can be availed even a previous loan is unpaid.";
-            this.chbPrevious.UseVisualStyleBackColor = true;
-            // 
-            // chbCurrent
-            // 
-            this.chbCurrent.AutoSize = true;
-            this.chbCurrent.Location = new System.Drawing.Point(104, 231);
-            this.chbCurrent.Name = "chbCurrent";
-            this.chbCurrent.Size = new System.Drawing.Size(345, 25);
-            this.chbCurrent.TabIndex = 21;
-            this.chbCurrent.Text = "A loan can be availed even this loan is unpaid.";
-            this.chbCurrent.UseVisualStyleBackColor = true;
-            // 
             // chbCollateral
             // 
             this.chbCollateral.AutoSize = true;
-            this.chbCollateral.Location = new System.Drawing.Point(277, 38);
+            this.chbCollateral.Location = new System.Drawing.Point(207, 38);
             this.chbCollateral.Name = "chbCollateral";
-            this.chbCollateral.Size = new System.Drawing.Size(95, 25);
+            this.chbCollateral.Size = new System.Drawing.Size(132, 25);
             this.chbCollateral.TabIndex = 9;
-            this.chbCollateral.Text = "Collateral";
+            this.chbCollateral.Text = "Has Collateral?";
             this.chbCollateral.UseVisualStyleBackColor = true;
-            // 
-            // chbFixed
-            // 
-            this.chbFixed.AutoSize = true;
-            this.chbFixed.Location = new System.Drawing.Point(175, 38);
-            this.chbFixed.Name = "chbFixed";
-            this.chbFixed.Size = new System.Drawing.Size(105, 25);
-            this.chbFixed.TabIndex = 8;
-            this.chbFixed.Text = "Fixed Term";
-            this.chbFixed.UseVisualStyleBackColor = true;
-            this.chbFixed.CheckedChanged += new System.EventHandler(this.chbFixed_CheckedChanged);
             // 
             // cbDeduction
             // 
@@ -226,7 +187,7 @@
             this.cbAmtStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbAmtStatus.FormattingEnabled = true;
             this.cbAmtStatus.Items.AddRange(new object[] {
-            "%",
+            "Times",
             "Php"});
             this.cbAmtStatus.Location = new System.Drawing.Point(345, 165);
             this.cbAmtStatus.Name = "cbAmtStatus";
@@ -343,16 +304,6 @@
             this.lblComaker.TabIndex = 54;
             this.lblComaker.Text = "Co-Makers:";
             // 
-            // lblEligibility
-            // 
-            this.lblEligibility.AutoSize = true;
-            this.lblEligibility.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblEligibility.Location = new System.Drawing.Point(12, 202);
-            this.lblEligibility.Name = "lblEligibility";
-            this.lblEligibility.Size = new System.Drawing.Size(74, 20);
-            this.lblEligibility.TabIndex = 52;
-            this.lblEligibility.Text = "Eligibility:";
-            // 
             // txtMaxAmt
             // 
             this.txtMaxAmt.ContextMenuStrip = this.contextMenuBlank;
@@ -409,7 +360,7 @@
             this.dataGridView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dataGridView.Location = new System.Drawing.Point(12, 12);
+            this.dataGridView.Location = new System.Drawing.Point(12, 10);
             this.dataGridView.Name = "dataGridView";
             this.dataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView.Size = new System.Drawing.Size(678, 171);
@@ -419,7 +370,7 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnDelete.Location = new System.Drawing.Point(581, 189);
+            this.btnDelete.Location = new System.Drawing.Point(581, 187);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(92, 32);
             this.btnDelete.TabIndex = 4;
@@ -429,7 +380,7 @@
             // btnEdit
             // 
             this.btnEdit.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnEdit.Location = new System.Drawing.Point(483, 189);
+            this.btnEdit.Location = new System.Drawing.Point(483, 187);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(92, 32);
             this.btnEdit.TabIndex = 3;
@@ -439,7 +390,7 @@
             // btnAdd
             // 
             this.btnAdd.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnAdd.Location = new System.Drawing.Point(385, 189);
+            this.btnAdd.Location = new System.Drawing.Point(385, 187);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(92, 32);
             this.btnAdd.TabIndex = 2;
@@ -461,7 +412,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(704, 529);
+            this.ClientSize = new System.Drawing.Size(704, 473);
             this.Controls.Add(this.cbShowArchive);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnEdit);
@@ -470,7 +421,7 @@
             this.Controls.Add(this.dataGridView);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.MinimumSize = new System.Drawing.Size(720, 568);
+            this.MinimumSize = new System.Drawing.Size(720, 512);
             this.Name = "LoanTypes";
             this.Text = "Loan Types";
             this.Load += new System.EventHandler(this.LoanTypes_Load);
@@ -493,10 +444,7 @@
         private System.Windows.Forms.CheckedListBox clbMemberType;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.CheckBox chbStatus;
-        private System.Windows.Forms.CheckBox chbPrevious;
-        private System.Windows.Forms.CheckBox chbCurrent;
         private System.Windows.Forms.CheckBox chbCollateral;
-        private System.Windows.Forms.CheckBox chbFixed;
         private System.Windows.Forms.ComboBox cbDeduction;
         private System.Windows.Forms.ComboBox cbAmtStatus;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -505,7 +453,6 @@
         private System.Windows.Forms.NumericUpDown maximumUD;
         private System.Windows.Forms.NumericUpDown minimumUD;
         private System.Windows.Forms.NumericUpDown comakersUD;
-        private System.Windows.Forms.Label lblEligibility;
         private System.Windows.Forms.TextBox txtMaxAmt;
         private System.Windows.Forms.TextBox txtName;
         private System.Windows.Forms.Button btnCancel;

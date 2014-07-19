@@ -25,8 +25,7 @@ namespace CMS.Loan_Management.Maintenance.View
 
         public void disableFunction()
         {
-            this.startDate.MinDate = DateTime.Now;
-            this.endDate.MinDate = DateTime.Now.AddDays(1);
+            this.startDate.Value = DateTime.Now;
             this.cbLoanType.SelectedIndex=-1;
             gbInterest.Enabled = false;
             this.chbStatus.CheckState = CheckState.Unchecked;
@@ -43,8 +42,7 @@ namespace CMS.Loan_Management.Maintenance.View
         public void enableFunction()
         {
             this.cbLoanType.Enabled = true;
-            this.startDate.MinDate = DateTime.Now;
-            this.endDate.MinDate = DateTime.Now.AddDays(1);
+            this.startDate.Value = DateTime.Now;
             this.cbLoanType.SelectedIndex = -1;
             gbInterest.Enabled = true;
             this.txtInterest.Text = String.Empty;
@@ -71,13 +69,9 @@ namespace CMS.Loan_Management.Maintenance.View
             this.cbLoanType.Enabled = false;
         }
 
-        public void resetDate() {
-
-            this.startDate.MinDate = DateTime.Now;
-            this.endDate.MinDate = DateTime.Now.AddDays(1);
-            this.startDate.Value = DateTime.Now;
-            this.endDate.Value = DateTime.Now.AddDays(1);
-        
+        public void resetDate() 
+        {
+            this.startDate.Value = DateTime.Now;        
         }
 
 
@@ -136,30 +130,13 @@ namespace CMS.Loan_Management.Maintenance.View
 
         public void setStartDate(System.DateTime s)
         {
-            this.startDate.MinDate = s;
+            this.startDate.Value = s;
         }
 
         public String getStartDate()
         {
             return this.startDate.Value.ToString("yyyy-MM-dd");
         }
-
-        public void setEndDate(System.DateTime s)
-        {
-            try
-            {
-                this.endDate.Value = s;
-            }
-            catch (Exception) { }
-        }
-
-        public String getEndDate()
-        {
-            return this.endDate.Value.ToString("yyyy-MM-dd");
-        }
-
-
-
         
         public void setStatus()
         {
@@ -185,7 +162,8 @@ namespace CMS.Loan_Management.Maintenance.View
         {
             this.dataInterest.DataSource = ds.Tables[0];
             this.dataInterest.Columns[0].Visible = false;
-        }
+            this.dataInterest.Columns[6].Visible = false;
+       }
 
         public DataGridViewRow getSelected()
         {
@@ -213,19 +191,7 @@ namespace CMS.Loan_Management.Maintenance.View
 
         private void LoanInterestRate_Load(object sender, EventArgs e)
         {
-            this.startDate.MinDate = DateTime.Now;
-            this.endDate.MinDate = DateTime.Now.AddDays(1);
-        }
 
-        private void startDate_ValueChanged(object sender, EventArgs e)
-        {
-            this.endDate.MinDate = this.startDate.Value.Date.AddDays(1);
-        }
-
-        private void startDate_TabIndexChanged(object sender, EventArgs e)
-        {
-            this.startDate.MinDate = DateTime.Now;
-            this.endDate.MinDate = DateTime.Now.AddDays(1);
         }
 
         private void txtInterest_KeyPress(object sender, KeyPressEventArgs e)
@@ -269,6 +235,68 @@ namespace CMS.Loan_Management.Maintenance.View
             }
         }
 
+        public void cbShowArchive_CheckStateChanged(EventHandler e)
+        {
+            this.cbShowArchive.Click += e;
+        }
+
+        public bool checkArchivedState()
+        {
+            this.btnEdit.Enabled = true;
+
+            if (this.cbShowArchive.CheckState == CheckState.Checked)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public DataGridViewRowCollection getAllRows()
+        {
+            return this.dataInterest.Rows;
+        }
+
+        public void setArchivedColor(int i)
+        {
+            this.dataInterest.Rows[i].DefaultCellStyle.BackColor = Color.Yellow;
+            this.dataInterest.Rows[i].DefaultCellStyle.SelectionBackColor = Color.YellowGreen;
+            this.dataInterest.Rows[i].DefaultCellStyle.SelectionForeColor = SystemColors.ControlText;
+        }
+
+        private void dataInterest_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            getSelectedData();
+        }
+
+        public void getSelectedData() 
+        {
+            DataGridViewRow selectedData = this.getSelected();
+            this.btnEdit.Enabled = true;
+
+            if (bool.Parse(selectedData.Cells["isArchived"].Value.ToString()))
+            {
+                this.btnEdit.Enabled = false;
+            }
+        }
+
+        private void dataInterest_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up)
+            {
+                getSelectedData();
+            }
+        }
+
+        private void dataInterest_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Down || e.KeyCode == Keys.Up)
+            {
+                getSelectedData();
+            }
+        }
 
     }
 }

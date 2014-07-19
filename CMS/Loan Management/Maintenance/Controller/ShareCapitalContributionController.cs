@@ -25,9 +25,33 @@ namespace CMS.Loan_Management.Maintenance.Controller
             this.view.setBtnEditEventHandler(this.btnEdit);
             this.view.setBtnSaveEventHandler(this.btnSave);
             this.view.capitalContributionGrid(this.model.SelectCapitalContribution());
+            this.view.cbShowArchive_CheckStateChanged(this.checkArchived);
             this.view.disableFunction();
             this.view.MdiParent = loanMenu;
             this.view.Show();
+        }
+
+        public void checkArchived(object sender, EventArgs e)
+        {
+            if (this.view.checkArchivedState())
+            {
+                this.view.capitalContributionGrid(this.model.SelectAllCapitalContribution());
+                DataGridViewRowCollection dr = this.view.getAllRows();
+                int i = 0;
+                foreach (DataGridViewRow row in dr)
+                {
+                    if (bool.Parse(row.Cells["isArchived"].Value.ToString()))
+                    {
+                        this.view.setArchivedColor(i);
+                    }
+                    i++;
+                }
+                this.view.getSelectedData();
+            }
+            else
+            {
+                this.view.capitalContributionGrid(this.model.SelectCapitalContribution());
+            }
         }
 
         public void btnAdd(object args, EventArgs e)
@@ -64,12 +88,11 @@ namespace CMS.Loan_Management.Maintenance.Controller
             this.view.disableType();
             DataGridViewRow selectedData = this.view.getSelected();
             TypeId = int.Parse(selectedData.Cells["Minimum Capital Contribution ID"].Value.ToString());
-            int i=this.view.initAccountType(this.model.selectAllMemberTypes());
+            this.view.initAccountType(this.model.selectAllMemberTypes());
             this.view.setAccountType(selectedData.Cells["Member Type"].Value.ToString());
             this.view.setCapitalContrib(selectedData.Cells["Share Capital"].Value.ToString());
             this.view.setComboContrib(selectedData.Cells["Duration"].Value.ToString());
-            this.view.setPenalty(selectedData.Cells["Penalty"].Value.ToString());
-            this.view.setComboCharge(selectedData.Cells["Charge In"].Value.ToString());
+
             if (bool.Parse(selectedData.Cells["Status"].Value.ToString()))
             {
                 this.view.setStatus();
@@ -78,7 +101,6 @@ namespace CMS.Loan_Management.Maintenance.Controller
 
         public void btnSave(object args, EventArgs e)
         {
-            this.model.comboCharge = this.view.getComboCharge();
             String errorMessage = String.Empty;
             int countError = 0;
             this.view.setAllLabelsToBlack();
@@ -124,33 +146,9 @@ namespace CMS.Loan_Management.Maintenance.Controller
             {
                 countError++;
                 errorMessage += countError + ". Please specify duration.\n";
-                this.view.lblCapitalContrib.ForeColor = System.Drawing.Color.Red;
+                this.view.lblDuration.ForeColor = System.Drawing.Color.Red;
             }
 
-            try
-            {
-                this.model.txtPenalty = this.view.getPenalty();
-                if (this.model.txtPenalty == 0)
-                {
-                    countError++; errorMessage += countError + ". Please specify penalty.\n"; this.view.lblPenalty.ForeColor = System.Drawing.Color.Red;
-                }
-            }
-            catch (Exception)
-            {
-                countError++;
-                errorMessage += countError + ". Please specify penalty. \n";
-                this.view.lblPenalty.ForeColor = System.Drawing.Color.Red;
-            }
-
-            if (this.model.txtPenalty >= this.model.txtContribution) { countError++; errorMessage += countError + ". Capital contribution must be greater than penalty.\n"; this.view.lblPenalty.ForeColor = System.Drawing.Color.Red; this.view.lblCapitalContrib.ForeColor = System.Drawing.Color.Red; }
-
-            //for (int i = 0; i < this.view.dataCapitalContribution.Rows.Count;i++ )
-            //{
-            //    this.view.dataCapitalContribution.Rows[i].Cells[1].Value.ToString();
-            //}
-
-
-            if (this.model.comboCharge == String.Empty) { countError++; errorMessage += countError + ". Please specify penalty basis.\n"; this.view.lblBasis.ForeColor = System.Drawing.Color.Red; }
 
                 if (isAdd)
                 {
@@ -158,8 +156,26 @@ namespace CMS.Loan_Management.Maintenance.Controller
                     if (countError==0 && this.model.InsertMinCapitalContrib() == 1)
                     {
                         MessageBox.Show("Add Success.", "Add Share Capital", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (this.view.checkArchivedState())
+                        {
+                            this.view.capitalContributionGrid(this.model.SelectAllCapitalContribution());
+                            DataGridViewRowCollection dr = this.view.getAllRows();
+                            int i = 0;
+                            foreach (DataGridViewRow row in dr)
+                            {
+                                if (bool.Parse(row.Cells["isArchived"].Value.ToString()))
+                                {
+                                    this.view.setArchivedColor(i);
+                                }
+                                i++;
+                            }
+                            this.view.getSelectedData();
+                        }
+                        else 
+                        {
+                            this.view.capitalContributionGrid(this.model.SelectCapitalContribution());
+                        }
                         this.view.disableFunction(); 
-                        this.view.capitalContributionGrid(this.model.SelectCapitalContribution());
                         isAdd = false;
                         TypeId = 0;
                     }
@@ -171,11 +187,29 @@ namespace CMS.Loan_Management.Maintenance.Controller
                 }
                 else
                 {
-                    if (countError==0 && this.model.UpdateMinCapitalContrib(TypeId) == 1)
+                    if (countError==0 && this.model.InsertMinCapitalContrib() == 1)
                     {
                         MessageBox.Show("Update Success.", "Update Share Capital", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (this.view.checkArchivedState())
+                        {
+                            this.view.capitalContributionGrid(this.model.SelectAllCapitalContribution());
+                            DataGridViewRowCollection dr = this.view.getAllRows();
+                            int i = 0;
+                            foreach (DataGridViewRow row in dr)
+                            {
+                                if (bool.Parse(row.Cells["isArchived"].Value.ToString()))
+                                {
+                                    this.view.setArchivedColor(i);
+                                }
+                                i++;
+                            }
+                            this.view.getSelectedData();
+                        }
+                        else 
+                        {
+                            this.view.capitalContributionGrid(this.model.SelectCapitalContribution());
+                        }
                         this.view.disableFunction();
-                        this.view.capitalContributionGrid(this.model.SelectCapitalContribution());
                         isAdd = false;
                         TypeId = 0;
                     }

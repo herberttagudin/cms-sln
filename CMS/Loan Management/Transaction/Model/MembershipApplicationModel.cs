@@ -334,12 +334,12 @@ namespace CMS.Loan_Management.Transaction.Model
         public int updateMember()
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC updateMember @AccountNo ,@MemberTypeNo, @dateMembership,@Picture,@LastName,@FirstName,@MiddleName,@AddressNo,@AddressStreet,@AddressBarangay,@AddressCity,@AddressProvince,@AddressZip,@Telephone,@CellphoneNo,@EmailAddress,@ResidenceYear,@ResidenceMonths,@ResidentialType,@BirthDate,@BirthPlace,@Gender,@CivilStatus,@SpouseName,@NoOfChildren,@NoOfDependents,@EducAttainment,@Course,@EmploymentStatus,@EmploymentYears,@EmploymentOccupation,@SelfEmployedYears,@Gross,@EmployerName,@EmployerNature,@EmployerAddress,@EmployerContact,@OtherCoop,@CoopName,@CoopAddress,@guardianName,@guardianRelation,@AcctHolderSign1,@AcctHolderSign2,@AcctHolderSign3,@GuardianSign1,@GuardianSign2,@GuardianSign3";
+            String sql = "EXEC updateMember @AccountNo ,@MemberTypeNo,@Picture, @dateMembership,@LastName,@FirstName,@MiddleName,@AddressNo,@AddressStreet,@AddressBarangay,@AddressCity,@AddressProvince,@AddressZip,@Telephone,@CellphoneNo,@EmailAddress,@ResidenceYear,@ResidenceMonths,@ResidentialType,@BirthDate,@BirthPlace,@Gender,@CivilStatus,@SpouseName,@NoOfChildren,@NoOfDependents,@EducAttainment,@Course,@EmploymentStatus,@EmploymentYears,@EmploymentOccupation,@SelfEmployedYears,@Gross,@EmployerName,@EmployerNature,@EmployerAddress,@EmployerContact,@OtherCoop,@CoopName,@CoopAddress,@guardianName,@guardianRelation,@AcctHolderSign1,@AcctHolderSign2,@AcctHolderSign3,@GuardianSign1,@GuardianSign2,@GuardianSign3";
             Dictionary<String, Object> parameters = new Dictionary<string, object>();
             parameters.Add("@AccountNo", this.AccountNo);
             parameters.Add("@MemberTypeNo", this.MemberType);
-            parameters.Add("@dateMembership", this.membershipDate);
             parameters.Add("@Picture", this.Picture);
+            parameters.Add("@dateMembership", this.membershipDate);
             parameters.Add("@LastName", this.LastName);
             parameters.Add("@FirstName", this.FirstName);
             parameters.Add("@MiddleName", this.MiddleName);

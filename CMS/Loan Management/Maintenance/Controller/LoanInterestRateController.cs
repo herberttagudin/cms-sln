@@ -25,10 +25,34 @@ namespace CMS.Loan_Management.Maintenance.Controller
             this.interestRate.setBtnEditEventHandler(this.btnEdit);
             this.interestRate.setBtnSaveEventHandler(this.btnSave);
             this.interestRate.loanGrid(this.interestModel.selectInterestRates());
+            this.interestRate.cbShowArchive_CheckStateChanged(this.checkArchived);
             this.interestRate.disableFunction();
             this.interestRate.MdiParent = loanMenu;
             isAdd = false;
             this.interestRate.Show();
+        }
+
+        public void checkArchived(object sender, EventArgs e)
+        {
+            if (this.interestRate.checkArchivedState())
+            {
+                this.interestRate.loanGrid(this.interestModel.selectAllInterestRates());
+                DataGridViewRowCollection dr = this.interestRate.getAllRows();
+                int i = 0;
+                foreach (DataGridViewRow row in dr)
+                {
+                    if (bool.Parse(row.Cells["isArchived"].Value.ToString()))
+                    {
+                        this.interestRate.setArchivedColor(i);
+                    }
+                    i++;
+                }
+                this.interestRate.getSelectedData();
+            }
+            else
+            {
+                this.interestRate.loanGrid(this.interestModel.selectInterestRates());
+            }
         }
 
         public void btnAdd(object args, EventArgs e)
@@ -96,13 +120,9 @@ namespace CMS.Loan_Management.Maintenance.Controller
             String[] arrInterest = selectedData.Cells["Interest Rate"].Value.ToString().Split(' ');
             this.interestRate.setInterestRateStatus(arrInterest[1]);
             this.interestRate.setInterestRate(double.Parse(arrInterest[0]));
-            this.TypeId = int.Parse(selectedData.Cells["Loan Type Id"].Value.ToString());
-           
-
-            
+            this.TypeId = int.Parse(selectedData.Cells["Loan Type Id"].Value.ToString());            
             this.interestRate.setDuration(selectedData.Cells["Duration"].Value.ToString());
-            this.interestRate.setStartDate(Convert.ToDateTime(selectedData.Cells["Start Date"].Value));
-            this.interestRate.setEndDate(Convert.ToDateTime(selectedData.Cells["End Date"].Value));
+            this.interestRate.setStartDate(Convert.ToDateTime(selectedData.Cells["Activation Date"].Value));
 
             if (bool.Parse(selectedData.Cells["Active"].Value.ToString()))
             {
@@ -121,7 +141,6 @@ namespace CMS.Loan_Management.Maintenance.Controller
             String errorMessage = String.Empty;
             this.interestRate.setAllLabelsToBlack();
             this.interestModel.DateFrom = this.interestRate.getStartDate();
-            this.interestModel.DateTo = this.interestRate.getEndDate();
 
             try
             {
@@ -172,7 +191,7 @@ namespace CMS.Loan_Management.Maintenance.Controller
             if (isAdd)
             {
                 
-                if (countError==0 && this.interestModel.insertInterestRate() == 1)
+                if (countError==0)
                 {
                     
 
@@ -199,8 +218,27 @@ namespace CMS.Loan_Management.Maintenance.Controller
 
                     if (pass == 1 || pass==0)
                     {
+                        this.interestModel.insertInterestRate();
                         MessageBox.Show("Add Success.", "Add Loan Interest Rate", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.interestRate.loanGrid(this.interestModel.selectInterestRates());
+                        if (this.interestRate.checkArchivedState())
+                        {
+                            this.interestRate.loanGrid(this.interestModel.selectAllInterestRates());
+                            DataGridViewRowCollection dr = this.interestRate.getAllRows();
+                            int i = 0;
+                            foreach (DataGridViewRow row in dr)
+                            {
+                                if (bool.Parse(row.Cells["isArchived"].Value.ToString()))
+                                {
+                                    this.interestRate.setArchivedColor(i);
+                                }
+                                i++;
+                            }
+                            this.interestRate.getSelectedData();
+                        }
+                        else 
+                        {
+                            this.interestRate.loanGrid(this.interestModel.selectInterestRates());
+                        }
                         this.interestRate.disableFunction();
                         this.interestRate.resetDate();
                         isAdd = false;
@@ -216,7 +254,7 @@ namespace CMS.Loan_Management.Maintenance.Controller
             else
             {
                 
-                if (countError==0 && this.interestModel.updateInterestRate(TypeId) == 1)
+                if (countError==0)
                 {
                     for (int i = 0; i < this.interestRate.dataInterest.Rows.Count; i++)
                     {
@@ -243,8 +281,27 @@ namespace CMS.Loan_Management.Maintenance.Controller
 
                     if (pass == 1 || pass == 0)
                     {
+                        this.interestModel.insertInterestRate();
                         MessageBox.Show("Update Success.", "Update Loan Interest Rate", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.interestRate.loanGrid(this.interestModel.selectInterestRates());
+                        if (this.interestRate.checkArchivedState())
+                        {
+                            this.interestRate.loanGrid(this.interestModel.selectAllInterestRates());
+                            DataGridViewRowCollection dr = this.interestRate.getAllRows();
+                            int i = 0;
+                            foreach (DataGridViewRow row in dr)
+                            {
+                                if (bool.Parse(row.Cells["isArchived"].Value.ToString()))
+                                {
+                                    this.interestRate.setArchivedColor(i);
+                                }
+                                i++;
+                            }
+                            this.interestRate.getSelectedData();
+                        }
+                        else 
+                        {
+                            this.interestRate.loanGrid(this.interestModel.selectInterestRates());
+                        }
                         this.interestRate.disableFunction();
                         this.interestRate.resetDate();
                         isAdd = false;

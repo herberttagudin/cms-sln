@@ -22,11 +22,8 @@ namespace CMS.Loan_Management.Maintenance.Model
         public String MaxAmtStatus { get; set; }
         public String Deduction { get; set; }
         public int Comakers { get; set; }
-        public int fixedValue { get; set; }
         public int collateralValue { get; set; }
         public CheckedListBox.CheckedItemCollection memberTypes { get; set; }
-        public int previousValue { get; set; }
-        public int currentValue { get; set; }
         public int Status { get; set; }
 
         public LoanTypeModel()
@@ -40,10 +37,7 @@ namespace CMS.Loan_Management.Maintenance.Model
             this.MaxAmtStatus = String.Empty; 
             this.Deduction = String.Empty;
             this.Comakers = 0;
-            this.fixedValue=0 ;
             this.collateralValue = 0;
-            this.previousValue = 0;
-            this.currentValue = 0;
             this.Status = 0;
         }
 
@@ -91,7 +85,7 @@ namespace CMS.Loan_Management.Maintenance.Model
         public DataSet selectloanTypes()
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "SELECT LoanTypeId as 'Loan Type Id', LoanTypeName as 'Loan Type Name', concat(MinimumPaymentDuration,' ',MinPDStatus) as 'Minimum Payment Duration', concat(MaximumPaymentDuration,' ',MaxPDStatus) as 'Maximum Payment Duration', concat(MaxLoanableAmt,' ',MaxLoanableAmtStatus) as 'Maximum Loan', Deduction, CoMaker, isFixed, isCollateral, isCurrentUnpaid, isPreviousUnpaid, Status as 'Active', isArchived FROM LOAN_TYPE WHERE isArchived = 0";
+            String sql = "SELECT LoanTypeId as 'Loan Type Id', LoanTypeName as 'Loan Type Name', concat(MinimumPaymentDuration,' ',MinPDStatus) as 'Minimum Payment Duration', concat(MaximumPaymentDuration,' ',MaxPDStatus) as 'Maximum Payment Duration', concat(MaxLoanableAmt,' ',MaxLoanableAmtStatus) as 'Maximum Loan', Deduction, CoMaker, isCollateral, Status as 'Active', isArchived FROM LOAN_TYPE WHERE isArchived = 0";
             DataSet ds = dal.executeDataSet(sql);            
             return ds;
         }
@@ -99,7 +93,7 @@ namespace CMS.Loan_Management.Maintenance.Model
         public DataSet selectAllLoanTypes()
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "SELECT LoanTypeId as 'Loan Type Id', LoanTypeName as 'Loan Type Name', concat(MinimumPaymentDuration,' ',MinPDStatus) as 'Minimum Payment Duration', concat(MaximumPaymentDuration,' ',MaxPDStatus) as 'Maximum Payment Duration', concat(MaxLoanableAmt,' ',MaxLoanableAmtStatus) as 'Maximum Loan', Deduction, CoMaker, isFixed, isCollateral, isCurrentUnpaid, isPreviousUnpaid, Status as 'Active', isArchived FROM LOAN_TYPE";
+            String sql = "SELECT LoanTypeId as 'Loan Type Id', LoanTypeName as 'Loan Type Name', concat(MinimumPaymentDuration,' ',MinPDStatus) as 'Minimum Payment Duration', concat(MaximumPaymentDuration,' ',MaxPDStatus) as 'Maximum Payment Duration', concat(MaxLoanableAmt,' ',MaxLoanableAmtStatus) as 'Maximum Loan', Deduction, CoMaker, isCollateral, Status as 'Active', isArchived FROM LOAN_TYPE";
             DataSet ds = dal.executeDataSet(sql);
             return ds;
         }
@@ -135,12 +129,12 @@ namespace CMS.Loan_Management.Maintenance.Model
             return ds;
         }
 
-        public int insertLoanType(ArrayList memberTypeNo, int Fixed, int Collateral, int Current, int Previous, int Status)
+        public int insertLoanType(ArrayList memberTypeNo, int Collateral, int Status)
         {
             int id = 0;
 
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC insertLoanType @LoanTypeName, @MinimumPaymentDuration, @MinPDStatus, @MaximumPaymentDuration, @MaxPDStatus, @MaxLoanableAmt, @MaxLoanableAmtStatus, @Deduction, @CoMaker, @isFixed, @isCollateral, @isCurrentUnpaid, @isPreviousUnpaid, @Status, @isArchived";
+            String sql = "EXEC insertLoanType @LoanTypeName, @MinimumPaymentDuration, @MinPDStatus, @MaximumPaymentDuration, @MaxPDStatus, @MaxLoanableAmt, @MaxLoanableAmtStatus, @Deduction, @CoMaker, @isCollateral, @Status, @isArchived";
             Dictionary<String, Object> parameters = new Dictionary<string, object>();
             parameters.Add("@LoanTypeName", this.Name);
             parameters.Add("@MinimumPaymentDuration", this.MinValue);
@@ -151,10 +145,7 @@ namespace CMS.Loan_Management.Maintenance.Model
             parameters.Add("@MaxLoanableAmtStatus", this.MaxAmtStatus);
             parameters.Add("@Deduction", this.Deduction);
             parameters.Add("@Comaker", this.Comakers);
-            parameters.Add("@isFixed", Fixed);
             parameters.Add("@isCollateral", Collateral);
-            parameters.Add("@isCurrentUnpaid", Current);
-            parameters.Add("@isPreviousUnpaid", Previous);
             parameters.Add("@Status", Status);
             parameters.Add("@isArchived", 0);
    
@@ -186,11 +177,11 @@ namespace CMS.Loan_Management.Maintenance.Model
         
               }
 
-        public int updateLoanType(int loanTypeId, ArrayList memberTypeNo, int Fixed, int Collateral, int Current, int Previous, int Status) {
+        public int updateLoanType(int loanTypeId, ArrayList memberTypeNo, int Collateral, int Status) {
             int resultInner = 0;
             int resultInner2 = 0;
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC updateLoanType @LoanTypeId, @LoanTypeName, @MinimumPaymentDuration, @MinPDStatus, @MaximumPaymentDuration, @MaxPDStatus, @MaxLoanableAmt, @MaxLoanableAmtStatus, @Deduction, @CoMaker, @isFixed, @isCollateral, @isCurrentUnpaid, @isPreviousUnpaid, @Status";
+            String sql = "EXEC updateLoanType @LoanTypeId, @LoanTypeName, @MinimumPaymentDuration, @MinPDStatus, @MaximumPaymentDuration, @MaxPDStatus, @MaxLoanableAmt, @MaxLoanableAmtStatus, @Deduction, @CoMaker, @isCollateral, @Status";
             Dictionary<String, Object> parameters = new Dictionary<string, object>();
             parameters.Add("@LoanTypeId", loanTypeId);
             parameters.Add("@LoanTypeName", this.Name);
@@ -202,10 +193,7 @@ namespace CMS.Loan_Management.Maintenance.Model
             parameters.Add("@MaxLoanableAmtStatus", this.MaxAmtStatus);
             parameters.Add("@Deduction", this.Deduction);
             parameters.Add("@CoMaker", this.Comakers);
-            parameters.Add("@isFixed", Fixed);
             parameters.Add("@isCollateral", Collateral);
-            parameters.Add("@isCurrentUnpaid", Current);
-            parameters.Add("@isPreviousUnpaid", Previous);
             parameters.Add("@Status", Status);
 
             int result = Convert.ToInt32(dal.executeNonQuery(sql, parameters));

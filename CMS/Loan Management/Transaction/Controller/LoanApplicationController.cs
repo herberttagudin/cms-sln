@@ -21,7 +21,6 @@ namespace CMS.Loan_Management.Transaction.Controller
         Boolean isAddEditComaker = false;
         Boolean isAddCollateral = false;
         Boolean isAddComaker = false;
-        Boolean isFixed = false;
         Boolean hasSpouse = false;
         int collateralIndex = 0;
         int comakerIndex = 0;
@@ -34,7 +33,10 @@ namespace CMS.Loan_Management.Transaction.Controller
         String accountNo = String.Empty;
         String memberName = String.Empty;
 
-        Dictionary<int, string> requirements = new Dictionary<int, string>();
+        Dictionary<int, string> charges = new Dictionary<int, string>();
+        int noOfAmortizations = 0;
+        double amortizationAmt = 0;
+        DateTime maturityDate = DateTime.Now;
 
         public LoanApplicationController(Transaction.Model.LoanApplicationModel loanApplicationModel, Transaction.View.LoanApplication loanApplication, Loan_Management.LoanManagementMenu loanMenu)
         {
@@ -47,11 +49,11 @@ namespace CMS.Loan_Management.Transaction.Controller
             this.loanApplication.setBtnCollateralNextEventHandler(this.btnCollateralNext);
             this.loanApplication.setBtnCollateralPreviousEventHandler(this.btnCollateralPrevious);
             this.loanApplication.setBtnComakerPreviousEventHandler(this.btnComakerPrevious);
+            this.loanApplication.setBtnComakerNextEventHandler(this.btnComakerNext);
+            this.loanApplication.setBtnApprovalPreviousEventHandler(this.btnApprovalPrevious);
             this.loanApplication.setBtnDetailsNextEventHandler(this.btnDetailsNext);
             this.loanApplication.setBtnDetailsPreviousEventHandler(this.btnDetailsPrevious);
             this.loanApplication.setBtnEditCollateralEventHandler(this.btnEditCollateral);
-            this.loanApplication.setBtnIncomeNextEventHandler(this.btnIncomeNext);
-            this.loanApplication.setBtnIncomePreviousEventHandler(this.btnIncomePrevious);
             this.loanApplication.setBtnProceedEventHandler(this.btnProceed);
             this.loanApplication.setBtnDeleteComakerEventHandler(this.btnDeleteComaker);
             this.loanApplication.setBtnSaveCollateralEventHandler(this.btnSaveCollateral);
@@ -66,19 +68,500 @@ namespace CMS.Loan_Management.Transaction.Controller
             this.loanApplication.txtCMAccountNo_TextChanged(this.searchCMAccountNo);
             this.loanApplication.txtMemberName_TextChanged(this.searchMemberName);
             this.loanApplication.txtAccountNo_TextChanged(this.searchAccountNo);
-            this.loanApplication.txtExpenses_TextChanged(this.addExpenses);
-            this.loanApplication.txtMonthlyExpense_TextChanged(this.addMonthlyExpense);
-            this.loanApplication.txtIncome_TextChanged(this.addIncomes);
-            this.loanApplication.txtGrossIncome_TextChanged(this.addGrossIncome);
-            this.loanApplication.cbLoanType_SelectedIndexChanged(this.addRequirementsAndLAD);
-            this.loanApplication.cbSourceOfFund_SelectedIndexChanged(this.addCurrentBalance);
+            this.loanApplication.cbLoanType_SelectedIndexChanged(this.loanTypeSelected);
             this.loanApplication.dataActiveMember_CellClick(this.showShareCapitalAndSavings);
             this.loanApplication.activeMemberGrid(this.loanApplicationModel.selectActiveMemberWithLoan());
+            this.loanApplication.clbCharges_MouseUp(addChargesMouseUp);
+            this.loanApplication.clbCharges_KeyPressed(addChargesKeyPressed);
+            this.loanApplication.amount_TextChanged(addNetLoan);
+            this.loanApplication.dateApproved_ValueChanged(setMaturityDate);
+            this.loanApplication.udPaymentDuration_ValueChanged(durationAndTermsChanged);
+            this.loanApplication.cbDurationStatus_SelectedIndexChanged(durationStatusChanged);
+            this.loanApplication.cbTerms_SelectedIndexChanged(durationAndTermsChanged);
+            this.loanApplication.txtLoanAmount_Leave(loanAmountLeave);
+            this.loanApplication.txtAmount_TextChanged(txtAmountChange);
+            this.loanApplication.chbLoanBalance_CheckChanged(loanBalance);
             this.loanApplication.disableFunction();
             this.loanApplication.enableDataActiveMember();
             this.loanApplication.MdiParent = loanMenu;
             this.loanApplication.Show();
             this.loanApplication.clearSelectionActiveMember();
+        }
+
+        public void loanBalInterestRateFunction() 
+        {
+            double totalInterest = 0;
+            Boolean hasInterest = false;
+
+            Dictionary<String, int> listOfInterestDates = new Dictionary<String, int>();
+            Dictionary<String, int> finalListOfInterestDates = new Dictionary<String, int>();
+            int lappId = Convert.ToInt32(this.loanApplication.dataAmortization.Rows[0].Cells[4].Value);
+            String maturityDate = this.loanApplicationModel.selectMaturityDate(lappId);
+            String interestDate = (DateTime.Parse(maturityDate).AddDays(1)).ToString();
+            String[] interest = this.loanApplicationModel.selectInterestPerLoanType(this.loanApplication.getTypeOfLoan()).Split(' ');
+
+            if (DateTime.Now > DateTime.Parse(maturityDate) && interest[0] != "")
+            {
+                String interestRateStatus = interest[0];
+                double interestRate = Convert.ToDouble(interest[1]);
+                String per = interest[2];
+
+                if (interestRateStatus == "%") { interestRate *= 0.01; }
+
+
+                if (per == "month")
+                {
+                    for (String a = interestDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddMonths(1)).ToString())
+                    {
+                        listOfInterestDates.Add(a, 0);
+                    }
+
+                    foreach (KeyValuePair<String, int> pair in listOfInterestDates)
+                    {
+                        String firstDate = DateTime.Parse(pair.Key).AddDays(-1).ToString();
+                        String secondDate = DateTime.Parse(pair.Key).AddMonths(1).ToString();
+                        int i = this.loanApplicationModel.selectPaymentDatesWithInterestRates(lappId, firstDate, secondDate);
+
+                        if (i > 0)
+                        {
+                            finalListOfInterestDates.Add(pair.Key, 0);
+                        }
+                    }
+
+                    String last = String.Empty;
+                    try
+                    {
+                        last = finalListOfInterestDates.Keys.Last();
+                    }
+                    catch (Exception) { last = maturityDate; }
+                    foreach (KeyValuePair<String, int> pair in listOfInterestDates)
+                    {
+                        if (DateTime.Parse(pair.Key) > DateTime.Parse(last))
+                        {
+                            hasInterest = true;
+                            double finalInterest = 0;
+                            double grantedLoanAmount = this.loanApplicationModel.selectGrantedLoanAmount(lappId);
+                            if (interestRateStatus == "%") { finalInterest = grantedLoanAmount * interestRate; }
+                            else if (interestRateStatus == "Php") { finalInterest = interestRate; }
+                            totalInterest += finalInterest;
+                            this.loanApplication.setPenaltyList("Interest Rate: " + pair.Key + "- Php " + finalInterest);
+                        }
+                    }
+
+                }
+
+                else if (per == "annum")
+                {
+                    for (String a = interestDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddYears(1)).ToString())
+                    {
+                        listOfInterestDates.Add(a, 0);
+                    }
+
+                    foreach (KeyValuePair<String, int> pair in listOfInterestDates)
+                    {
+                        String firstDate = DateTime.Parse(pair.Key).AddDays(-1).ToString();
+                        String secondDate = DateTime.Parse(pair.Key).AddYears(1).ToString();
+                        int i = this.loanApplicationModel.selectPaymentDatesWithInterestRates(lappId, firstDate, secondDate);
+
+                        if (i > 0)
+                        {
+                            finalListOfInterestDates.Add(pair.Key, 0);
+                        }
+                    }
+
+                    String last = String.Empty;
+                    try
+                    {
+                        last = finalListOfInterestDates.Keys.Last();
+                    }
+                    catch (Exception) { last = maturityDate; }
+                    foreach (KeyValuePair<String, int> pair in listOfInterestDates)
+                    {
+                        if (DateTime.Parse(pair.Key) > DateTime.Parse(last))
+                        {
+                            hasInterest = true;
+                            double finalInterest = 0;
+                            double grantedLoanAmount = this.loanApplicationModel.selectGrantedLoanAmount(lappId);
+                            if (interestRateStatus == "%") { finalInterest = grantedLoanAmount * interestRate; }
+                            else if (interestRateStatus == "Php") { finalInterest = interestRate; }
+                            totalInterest += finalInterest;
+                            this.loanApplication.setPenaltyList("Interest Rate: " + pair.Key + "- Php " + finalInterest);
+                        }
+                    }
+                }
+            }
+
+            if (this.loanApplication.getIfPenaltyListIsEmpty("Interest Rate"))
+            {
+                this.loanApplication.setPenaltyList("No interest.");
+            }
+
+        }
+
+        public void loanBalanceFunc() 
+        {
+            double totalPenalty = 0;
+            int noOfLoanBalance = 0;
+
+            if (this.loanApplication.getLoanBalanceStatus())
+            {
+                int loanApplicationId = this.loanApplicationModel.selectUnclearedLoan(finalAccountNo);
+
+                if (loanApplicationId > 0)
+                {
+                    
+                    String[] loanType = this.loanApplicationModel.selectUnclearedLoanType(loanApplicationId).Split(' ');
+                    int loanTypeId = Convert.ToInt32(loanType[0]);
+                    this.loanApplication.classGridAmortization(this.loanApplicationModel.selectAmortizations(finalAccountNo, loanTypeId));
+
+                    foreach (DataGridViewRow rows in this.loanApplication.dataAmortization.Rows)
+                    {
+                        noOfLoanBalance++;
+                    }
+                    double grantedLoanAmount = this.loanApplicationModel.selectGrantedLoanAmount(loanApplicationId);
+                    double remainingBalance = this.loanApplicationModel.selectRemainingBalance(loanApplicationId);
+                    String maturityDate = this.loanApplicationModel.selectMaturityDate(loanApplicationId);
+
+                    this.loanApplication.setPenaltyList("Loan Type: " + loanType[1]);
+                    this.loanApplication.setPenaltyList("Loan Amount: " + grantedLoanAmount);
+                    this.loanApplication.setPenaltyList("Maturity Date: " + maturityDate);
+                    this.loanApplication.setPenaltyList("No. of Amortizations: " + noOfLoanBalance);
+                    this.loanApplication.setPenaltyList("Remaining Balance: " + remainingBalance);
+                    this.loanApplication.setPenaltyList("");
+                    this.loanApplication.setPenaltyList("INTERESTS:");
+                    loanBalInterestRateFunction();
+                    this.loanApplication.setPenaltyList("");
+                    this.loanApplication.setPenaltyList("PENALTIES:");
+                    this.loanApplication.setPenaltyList("");
+
+
+                    foreach (DataGridViewRow rows in this.loanApplication.dataAmortization.Rows)
+                    {
+                        DataSet ds2 = this.loanApplicationModel.selectMonthlyAmortization(loanApplicationId);
+                        double monthlyAmortization = double.Parse(ds2.Tables[0].Rows[0][0].ToString());
+                        String loanDurationStatus = ds2.Tables[0].Rows[0][1].ToString();
+                        if (loanDurationStatus == "week/s") { monthlyAmortization *= 4; }
+                        else if (loanDurationStatus == "year/s") { monthlyAmortization /= 12; }
+
+                        String dueDate = rows.Cells[3].Value.ToString();
+                        double amortizationAmount = double.Parse(rows.Cells[2].Value.ToString());
+
+                        DataSet ds = this.loanApplicationModel.selectPenaltiesPerLoanType(loanTypeId);
+                        if (ds.Tables[0].Rows.Count == 0 || DateTime.Parse(dueDate) > DateTime.Now)
+                        {
+                            this.loanApplication.setPenalty(0);
+                            this.loanApplication.setPenaltyList("No penalties - Amortization #" + rows.Cells[1].Value.ToString());
+                        }
+
+                        else
+                        {
+                            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                            {
+                                double initialPenalty = 0;
+                                String finalDate = String.Empty;
+                                String penaltyName = ds.Tables[0].Rows[i][0].ToString();
+                                int gracePeriod = int.Parse(ds.Tables[0].Rows[i][1].ToString());
+                                double amount = double.Parse(ds.Tables[0].Rows[i][2].ToString());
+                                String amountStatus = ds.Tables[0].Rows[i][3].ToString();
+                                String deductTo = ds.Tables[0].Rows[i][4].ToString();
+                                int duration = int.Parse(ds.Tables[0].Rows[i][5].ToString());
+                                String durationStatus = ds.Tables[0].Rows[i][6].ToString();
+
+                                if (durationStatus == "week/s") { duration = duration * 7; }
+                                //TimeSpan diffDate = DateTime.Now.Subtract(DateTime.Parse(dueDate));
+                                //int totalDays = (int)diffDate.TotalDays;
+                                //totalDays -= gracePeriod;
+                                String newDate = (DateTime.Parse(dueDate).AddDays(gracePeriod)).ToString();
+
+                                if (amountStatus == "%") { amount = amount * 0.01; }
+
+                                finalDate = DateTime.Parse(newDate).AddDays(1).ToString();
+
+                                if (deductTo == "monthly amortization")
+                                {
+                                    if (durationStatus == "month/s")
+                                    {
+                                        for (String a = finalDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddMonths(duration)).ToString())
+                                        {
+                                            initialPenalty = amount * monthlyAmortization;
+                                            totalPenalty += initialPenalty;
+                                            this.loanApplication.setPenaltyList(penaltyName + ": " + a + "- Php" + initialPenalty + " - Amortization #" + rows.Cells[1].Value.ToString());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (String a = finalDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddDays(duration)).ToString())
+                                        {
+                                            initialPenalty = amount * monthlyAmortization;
+                                            totalPenalty += initialPenalty;
+                                            this.loanApplication.setPenaltyList(penaltyName + ": " + a + "- Php" + initialPenalty + " - Amortization #" + rows.Cells[1].Value.ToString());
+                                        }
+                                    }
+                                }
+                                else if (deductTo == "remaining balance")
+                                {
+                                    if (durationStatus == "month/s")
+                                    {
+                                        for (String a = finalDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddMonths(duration)).ToString())
+                                        {
+                                            initialPenalty = amount * remainingBalance;
+                                            totalPenalty += initialPenalty;
+                                            this.loanApplication.setPenaltyList(penaltyName + ": " + a + "- Php" + initialPenalty + " - Amortization #" + rows.Cells[1].Value.ToString());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (String a = finalDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddDays(duration)).ToString())
+                                        {
+                                            initialPenalty = amount * remainingBalance;
+                                            totalPenalty += initialPenalty;
+                                            this.loanApplication.setPenaltyList(penaltyName + ": " + a + "- Php" + initialPenalty + " - Amortization #" + rows.Cells[1].Value.ToString());
+                                        }
+                                    }
+                                }
+                                else if (deductTo == "granted loan amount")
+                                {
+                                    if (durationStatus == "month/s")
+                                    {
+                                        for (String a = finalDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddMonths(duration)).ToString())
+                                        {
+                                            initialPenalty = amount * grantedLoanAmount;
+                                            totalPenalty += initialPenalty;
+                                            this.loanApplication.setPenaltyList(penaltyName + ": " + a + "- Php" + initialPenalty + " - Amortization #" + rows.Cells[1].Value.ToString());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (String a = finalDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddDays(duration)).ToString())
+                                        {
+                                            initialPenalty = amount * grantedLoanAmount;
+                                            totalPenalty += initialPenalty;
+                                            this.loanApplication.setPenaltyList(penaltyName + ": " + a + "- Php" + initialPenalty + " - Amortization #" + rows.Cells[1].Value.ToString());
+                                        }
+                                    }
+                                }
+
+                                else if (deductTo == String.Empty)
+                                {
+                                    if (durationStatus == "month/s")
+                                    {
+                                        for (String a = finalDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddMonths(duration)).ToString())
+                                        {
+                                            initialPenalty = amount;
+                                            totalPenalty += initialPenalty;
+                                            this.loanApplication.setPenaltyList(penaltyName + ": " + a + "- Php" + initialPenalty + " - Amortization #" + rows.Cells[1].Value.ToString());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (String a = finalDate; DateTime.Parse(a) <= DateTime.Now; a = (DateTime.Parse(a).AddDays(duration)).ToString())
+                                        {
+                                            initialPenalty = amount;
+                                            totalPenalty += initialPenalty;
+                                            this.loanApplication.setPenaltyList(penaltyName + ": " + a + "- Php" + initialPenalty + " - Amortization #" + rows.Cells[1].Value.ToString());
+                                        }
+                                    }
+                                }
+                            }//end for loop
+
+                            if (this.loanApplication.getIfPenaltyListIsEmpty("Amortization #" + rows.Cells[1].Value.ToString()))
+                            {
+                                this.loanApplication.setPenaltyList("No penalties - Amortization #" + rows.Cells[1].Value.ToString());
+                            }
+
+                        }//end else
+
+                        this.loanApplication.setPenalty(totalPenalty);
+                        this.loanApplication.setLoanBalance(remainingBalance);
+                    }
+                }
+
+                else
+                {
+                    this.loanApplication.setPenaltyList("No loan balance.");
+                }
+            }
+            else
+            {
+                this.loanApplication.clearPenaltyList();
+                this.loanApplication.dataAmortization.DataSource = null;
+                this.loanApplication.setLoanBalance(0);
+                this.loanApplication.setPenalty(0);
+            }
+        }
+
+        public void loanBalance(object sender, EventArgs e) 
+        {
+            loanBalanceFunc();
+        }
+
+        public void txtAmountChange(object sender, EventArgs e) 
+        {
+            this.loanApplication.txtAmountChange();
+            interestRateFunc();
+            maturityDateFunc();
+            addChargesFunc();
+        }
+
+        public void loanAmountLeave(object sender, EventArgs e) 
+        {
+            this.loanApplication.setAmount(this.loanApplication.getLoanAmount());
+            interestRateFunc();
+        }
+
+        public void durationStatusChanged(object sender, EventArgs e)
+        {
+            this.loanApplication.editTerms();
+            maturityDateFunc();
+            addChargesFunc();
+        }
+
+        public void durationAndTermsChanged(object sender, EventArgs e) 
+        {
+            maturityDateFunc();
+            addChargesFunc();
+        }
+
+        public void setMaturityDate(object sender, EventArgs e) 
+        {
+            maturityDateFunc();
+        }
+
+        public void interestRateFunc() 
+        {
+            String ir = this.loanApplicationModel.selectInterestRate(this.loanApplication.getTypeOfLoan());
+            double interest = 0;
+            if (ir != String.Empty)
+            {
+                String[] interestRate = ir.Split(' ');
+                if (interestRate[1] == "Php")
+                {
+                    interest = double.Parse(interestRate[0]);
+                }
+                else if (interestRate[1] == "%")
+                {
+                    interest = this.loanApplication.getAmount() * (double.Parse(interestRate[0]) / 100);
+                }
+            }
+            else { interest = 0; }
+            this.loanApplication.setInterestRate(interest);
+        }
+
+        public void maturityDateFunc() 
+        {
+            noOfAmortizations = 0;
+            amortizationAmt = 0;
+            maturityDate = this.loanApplication.getDateOfApproval();
+
+            String paymentDuration = String.Empty;
+            String terms = String.Empty;
+            //noOfAmortization
+            try
+            {
+                paymentDuration = this.loanApplication.getDurationStatus();
+                terms = this.loanApplication.getTermsOfPayment();
+            }
+            catch (Exception) {}
+            int paymentDurationValue = this.loanApplication.getPaymentDurationValue();
+
+            if (paymentDuration == "week/s")
+            {
+                noOfAmortizations = paymentDurationValue;
+                maturityDate = maturityDate.AddDays(paymentDurationValue * 7);
+            }
+            else if (paymentDuration == "month/s")
+            {
+                maturityDate = maturityDate.AddMonths(paymentDurationValue);
+                if (terms == "weekly") 
+                {
+                    for (DateTime startDate = this.loanApplication.getDateOfApproval().AddDays(7); startDate <= maturityDate; startDate = startDate.AddDays(7)) 
+                    {
+                        noOfAmortizations++;
+                    }               
+                }
+                else if (terms == "monthly") { noOfAmortizations = paymentDurationValue; }
+            }
+            else if (paymentDuration == "year/s")
+            {
+                maturityDate = maturityDate.AddYears(paymentDurationValue);
+                if (terms == "weekly") 
+                {
+                    for (DateTime startDate = this.loanApplication.getDateOfApproval().AddDays(7); startDate <= maturityDate; startDate = startDate.AddDays(7))
+                    {
+                        noOfAmortizations++;
+                    }  
+                }
+                else if (terms == "monthly") { noOfAmortizations = paymentDurationValue * 12; }
+                else if (terms == "quarterly") { noOfAmortizations = paymentDurationValue * 3; }
+                else if (terms == "semi-annually") { noOfAmortizations = paymentDurationValue * 2; }
+                else if (terms == "annually") { noOfAmortizations = paymentDurationValue; }
+            }
+
+            //maturitydate
+            this.loanApplication.setMaturityDate(maturityDate.ToString("MM/dd/yyyy"));
+
+
+            //amortization amount
+            amortizationAmt = this.loanApplication.getAmount() / noOfAmortizations;
+
+        }
+
+        public void addChargesFunc() 
+        {
+            double finalCharge = 0;
+            CheckedListBox.CheckedItemCollection charges = this.loanApplication.getCheckedCharges();
+
+            foreach (String s in charges)
+            {
+                String[] initAmount = s.Split('-');
+                String[] finalAmount = initAmount[1].Split(' ');
+                if (initAmount[1].Contains("Php"))
+                {
+                    finalCharge += double.Parse(finalAmount[1]);
+                }
+                else if (initAmount[1].Contains("% of loan"))
+                {
+                    finalCharge = finalCharge + ((double.Parse(finalAmount[1]) / 100) * this.loanApplication.getAmount());
+                }
+                else if (initAmount[1].Contains("% of amortization"))
+                {
+                    finalCharge = finalCharge + ((double.Parse(finalAmount[1]) / 100) * amortizationAmt);
+                }
+
+            }
+
+            this.loanApplication.setCharges(finalCharge);
+        }
+
+        public void addNetLoan(object sender, EventArgs e)
+        {
+            double netLoan = 0;
+            double amount = this.loanApplication.getAmount();
+            double charge = this.loanApplication.getCharges();
+            double interest = this.loanApplication.getInterestRate();
+            double loanBalance = this.loanApplication.getLoanBalance();
+            double penalty = this.loanApplication.getPenalty();
+
+            netLoan += amount;
+            netLoan -= charge;
+            netLoan -= interest;
+            netLoan -= loanBalance;
+            netLoan -= penalty;
+
+            this.loanApplication.setNetLoan(netLoan);
+        }
+
+        public void addChargesKeyPressed(object sender, KeyPressEventArgs e) 
+        {
+            if (e.KeyChar == ' ') 
+            {
+                addChargesFunc();
+            }
+        }
+
+        public void addChargesMouseUp(object sender, MouseEventArgs e)
+        {
+            addChargesFunc();
         }
 
         public void showShareCapitalAndSavings(object args, DataGridViewCellEventArgs e) 
@@ -93,82 +576,51 @@ namespace CMS.Loan_Management.Transaction.Controller
             }
         }
 
-        public void addCurrentBalance(object args, EventArgs e)
+        public void loanTypeSelected(object args, EventArgs e)
         {
-            int i = this.loanApplication.getCBLADIndex();
-            if (i != -1)
-            {
-                this.loanApplication.clearCurrentBalance();
-                double currentBalance = this.loanApplicationModel.selectTimeDepositBalance(this.loanApplication.getSourceOfFund());
-                this.loanApplication.setCurrentBalance(currentBalance);
-                this.loanApplication.setLblMaxAmount(currentBalance+"");
-            }
-            else
-            {
-                this.loanApplication.setStateMaxAmountFalse();
-                this.loanApplication.clearCurrentBalance(); 
-            }
-        }
-
-        public void addRequirementsAndLAD(object args, EventArgs e)
-        {
+            this.loanApplication.setCharges(0);
             this.loanApplication.setAllTpDetailsLabelsToBlack();
             int i = this.loanApplication.getCBLoanTypeIndex();
-            if (i == -1) { this.loanApplication.getifcbLoanTypeIndexNegOne(); this.loanApplication.setStatePaymentDurationFalse(); }
+            if (i == -1) { this.loanApplication.getifcbLoanTypeIndexNegOne(); this.loanApplication.setStatePaymentDurationFalse(); this.loanApplication.setStateMaxAmountFalse(); }
             else
             {
-                this.loanApplication.disableLAD();
-                this.loanApplication.removeAllRequirements();
                 int selectedLoanTypeId = this.loanApplication.getTypeOfLoan();
+
+                //interest
+                interestRateFunc();
+
+                //show clbcharges
+                charges.Clear();
+                DataTable ds1 = this.loanApplicationModel.selectActiveCharges(selectedLoanTypeId).Tables[0];
+                foreach (DataRow dr in ds1.Rows)
+                {
+
+                    charges.Add(int.Parse(dr["ChargeId"].ToString()), (dr["Charge Name"].ToString() + " - " + dr["Amount"].ToString() + " " + dr["Amount Status"].ToString()));
+
+                }
+                this.loanApplication.addItemsAtCharges(charges);
 
                 isCollateral = this.loanApplicationModel.checkIfLoanIsCollateralized(selectedLoanTypeId);
                 noOfComakers = this.loanApplicationModel.checkIfLoanHasComakers(selectedLoanTypeId);
-                if (isCollateral == 0 && noOfComakers == 0)
-                {
-                    this.loanApplication.noCollateralAndComakerFunc();
-                }
-                else
-                {
-                    this.loanApplication.setBtnDetailsNext();
-                }
-
-                requirements.Clear();
-                DataTable ds = this.loanApplicationModel.selectRequirements(selectedLoanTypeId).Tables[0];
-                foreach (DataRow dr in ds.Rows)
-                {
-
-                    requirements.Add(int.Parse(dr["RequirementNo"].ToString()), (dr["Description"].ToString() + " (" + dr["Necessity"].ToString() + ")"));
-
-                }
-                this.loanApplication.addItemsAtRequirements(requirements);
+                this.loanApplication.setBtnDetailsNext();
 
                 String paymentDuration = this.loanApplicationModel.selectPaymentDuration(selectedLoanTypeId);
                 this.loanApplication.setLblPaymentDuration(paymentDuration);
 
-                isFixed = this.loanApplicationModel.checkIfLoanIsFixed(selectedLoanTypeId);
-                if (isFixed)
-                {
-                    this.loanApplication.enableLoanAgainstDeposit(isFixed);
-                    this.loanApplication.addItemsAtSourceOfFund(this.loanApplicationModel.selectTimeDepositAccounts(finalAccountNo));
-                    this.loanApplication.setCBLADIndex();
-                }
-                else 
-                {
-                    this.loanApplication.enableLoanAgainstDeposit(isFixed);
                     String maxLoanableAmount = this.loanApplicationModel.selectMaximumLoanableAmount(selectedLoanTypeId);
                     String[] amount = maxLoanableAmount.Split(' ');
                     double initAmt = double.Parse(amount[0]);
-                    if(maxLoanableAmount.Contains("% Share Capital"))
+                    if(maxLoanableAmount.Contains("Times Share Capital"))
                     {
                         double shareCapital = this.loanApplication.getCurrentShareCapital();
-                        double loanAmount = (initAmt / 100) * shareCapital;
+                        double loanAmount = initAmt * shareCapital;
                         this.loanApplication.setLblMaxAmount(loanAmount+"");
                     }
 
-                    else if (maxLoanableAmount.Contains("% Savings Balance"))
+                    else if (maxLoanableAmount.Contains("Times Savings Balance"))
                     {
                         double savingsBalance = this.loanApplication.getCurrentTotalSavings();
-                        double loanAmount = (initAmt / 100) * savingsBalance;
+                        double loanAmount = initAmt * savingsBalance;
                         this.loanApplication.setLblMaxAmount(loanAmount + "");
                     }
 
@@ -176,53 +628,10 @@ namespace CMS.Loan_Management.Transaction.Controller
                     {
                         this.loanApplication.setLblMaxAmount(initAmt+"");
                     }
-                }
+                
             }
         }
 
-        public void addGrossIncome(object args, EventArgs e) 
-        {
-            double netMonthlyIncome = 0;
-
-            netMonthlyIncome = this.loanApplication.getGrossIncome() - this.loanApplication.getLessMonthlyExpense();
-
-            this.loanApplication.setNetMonthlyIncome(netMonthlyIncome);
-        }
-
-        public void addIncomes(object args, EventArgs e) 
-        {
-            double grossIncome = 0;
-            grossIncome += this.loanApplication.getMonthlyIncome();
-            grossIncome += this.loanApplication.getSpouseIncome();
-            grossIncome += this.loanApplication.getOtherSources();
-
-            this.loanApplication.setGrossIncome(grossIncome);
-        }
-
-        public void addMonthlyExpense(object args, EventArgs e) 
-        {
-            double netMonthlyIncome = 0;
-            this.loanApplication.setLessMonthlyExpense(this.loanApplication.getMonthlyExpense());
-
-            netMonthlyIncome = this.loanApplication.getGrossIncome() - this.loanApplication.getLessMonthlyExpense();
-            this.loanApplication.setNetMonthlyIncome(netMonthlyIncome);
-        }
-
-        public void addExpenses(object args, EventArgs e) 
-        {
-            double monthlyExpenses = 0;
-            monthlyExpenses += this.loanApplication.getFood();
-            monthlyExpenses += this.loanApplication.getElectricity();
-            monthlyExpenses += this.loanApplication.getWater();
-            monthlyExpenses += this.loanApplication.getTuition();
-            monthlyExpenses += this.loanApplication.getRent();
-            monthlyExpenses += this.loanApplication.getTransportation();
-            monthlyExpenses += this.loanApplication.getLoanRepayment();
-            monthlyExpenses += this.loanApplication.getTelephone();
-            monthlyExpenses += this.loanApplication.getMiscellaneous();
-
-            this.loanApplication.setMonthlyExpense(monthlyExpenses);
-        }
 
         public void searchMemberName(object args, EventArgs e) 
         {
@@ -263,133 +672,38 @@ namespace CMS.Loan_Management.Transaction.Controller
         {
       
             int row = this.loanApplication.getActiveMemberIndex();
-            int noOfPendingLoans = this.loanApplicationModel.selectPendingLoans(this.loanApplication.getAccountNo());
 
-            if (noOfPendingLoans > 0) 
-            {
-                MessageBox.Show("There is still a pending loan for Account No. :"+this.loanApplication.getAccountNo()+".","Loan Application",MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-            if(row>=0 && noOfPendingLoans ==0)
+            if(row>=0)
             {
             this.loanApplication.btnProceedFunc();
             this.loanApplication.disableDataActiveMember();
             finalAccountNo = this.loanApplication.getAccountNo();
             finalMemberType = this.loanApplication.getMemberType();
-            String spouse = this.loanApplicationModel.checkSpouseName(finalAccountNo);
-            if (spouse == String.Empty) { this.loanApplication.disableSpouseIncome(); }
-            this.loanApplication.setChildrenDependents(this.loanApplicationModel.selectNoOfDependents(finalAccountNo));
-            }
-        }
-        
-        public void btnIncomePrevious(object args, EventArgs e) 
-        {
-            this.loanApplication.btnIncomePreviousFunc();
-            this.loanApplication.setAllTpDetailsLabelsToBlack();
-        }
-        
-        public void btnIncomeNext(object args, EventArgs e) 
-        {
-            this.loanApplication.btnIncomeNextFunc();
 
             if (isbtnDetailsPrevious == false)
             {
                 this.loanApplication.setLoanCount(this.loanApplicationModel.selectLoanApprovedCount(this.loanApplication.getAccountNo()));
-                
-                DataTable ds = this.loanApplicationModel.selectLoanTypeUnpaid(finalAccountNo).Tables[0];
-                if (ds.Rows.Count > 0)
-                {
-                    int checkAdd = 0;
-                    DataTable loanType =new DataTable();
-                    //loanType.Columns.Add("LoanTypeId", typeof(int));
-                    //loanType.Columns.Add("LoanTypeName", typeof(String));
+                this.loanApplication.addItemsAtTypeOfLoan(this.loanApplicationModel.selectLoanType(finalMemberType));
+                this.loanApplication.setCBLoanTypeIndex();
+            }
 
-                    foreach (DataRow dr in ds.Rows)
-                    {
-                        int currentLoan = this.loanApplicationModel.selectCurrentEligibility(int.Parse(dr["LoanTypeId"].ToString()));
-                       
-                        if (checkAdd == 0 && currentLoan == 1) 
-                        { 
-                            loanType = this.loanApplicationModel.selectLoanType(finalMemberType).Tables[0];
-                            for(int i =0;i<loanType.Rows.Count;i++) 
-                            {
-                                int previousLoan = this.loanApplicationModel.selectPreviousEligibility(int.Parse(loanType.Rows[i]["LoanTypeId"].ToString()));
-                                if (previousLoan == 0) 
-                                {
-                                    loanType.Rows.RemoveAt(i);
-                                    i--;
-                                }
-                            }
-
-                        }
-
-                        else if (checkAdd == 0 && currentLoan == 0) 
-                        {
-                            checkAdd = 1;
-                            loanType = this.loanApplicationModel.selectLoanType(finalMemberType).Tables[0];
-                            loanType.Rows.Clear();
-                            DataTable allLoanTypes = this.loanApplicationModel.selectLoanType(finalMemberType).Tables[0];
-                            for (int i = 0; i < allLoanTypes.Rows.Count; i++)
-                            {
-                                int previousLoan = this.loanApplicationModel.selectPreviousEligibility(int.Parse(allLoanTypes.Rows[i]["LoanTypeId"].ToString()));
-                                if (previousLoan == 1)
-                                {
-                                    loanType.Rows.Add(allLoanTypes.Rows[i]["LoanTypeId"], allLoanTypes.Rows[i]["LoanTypeName"]);
-                                }
-                            }
-                        }
-
-                    }
-
-                    DataSet dataLoanType = loanType.DataSet;
-                    dataLoanType.Tables.Remove(loanType.TableName);
-                    dataLoanType.Tables.Add(loanType);
-                    this.loanApplication.addItemsAtTypeOfLoan(dataLoanType);
-                    this.loanApplication.setCBLoanTypeIndex();
-                }
-
-                else
-                {
-                    this.loanApplication.addItemsAtTypeOfLoan(this.loanApplicationModel.selectLoanType(finalMemberType));
-                    this.loanApplication.setCBLoanTypeIndex();
-                }
             }
         }
+        
         
         public void btnDetailsPrevious(object args, EventArgs e) 
         {
             isbtnDetailsPrevious = true;
             this.loanApplication.btnDetailsPreviousFunc();
+            this.loanApplication.setAllTpDetailsLabelsToBlack();
         }
 
         public void btnDetailsNext(object args, EventArgs e)
         {
             this.loanApplication.setAllTpDetailsLabelsToBlack();
-            int countRequired = 0;
             int countError = 0;
-            CheckedListBox.CheckedItemCollection requirementsName = this.loanApplication.getCheckedRequirements();
-            Dictionary<string, int> setOfRequirement = new Dictionary<string, int>();
 
             //details-validation
-            foreach (KeyValuePair<int, string> pair in requirements)
-            {
-                setOfRequirement.Add(pair.Value, 0);
-            }
-
-            foreach (String s in requirementsName)
-            {
-                setOfRequirement[s] += 1;
-            }
-
-            foreach (KeyValuePair<string, int> pair in setOfRequirement) 
-            {
-                if (pair.Value == 0) 
-                {
-                    if (pair.Key.ToString().Contains("(Required upon application)")) { countRequired++; }
-                }
-            }
-
-            if (countRequired > 0 || requirementsName.Count == 0) { this.loanApplication.lblRequirementChecklist.ForeColor = Color.Red; countError++; }
             if (this.loanApplication.getCBLoanTypeIndex() == -1) { this.loanApplication.lblLoanType.ForeColor = Color.Red; countError++; }
             if (this.loanApplication.getPurpose() == String.Empty) { this.loanApplication.lblPurpose.ForeColor = Color.Red; countError++; }
             try
@@ -416,11 +730,6 @@ namespace CMS.Loan_Management.Transaction.Controller
             }
             catch (Exception) { this.loanApplication.lblTerms.ForeColor = Color.Red; countError++; }
 
-            if (this.loanApplication.getIfLoanAgainstDeposit()) 
-            {
-                if(this.loanApplication.getSourceOfFund() == 0) { this.loanApplication.lblSourceOfFund.ForeColor = Color.Red; countError++; }
-            }
-
             //details-validation end
 
             if(countError == 0)
@@ -442,6 +751,11 @@ namespace CMS.Loan_Management.Transaction.Controller
                     this.loanApplication.viewComakerGrid(this.loanApplicationModel.selectActiveMemberWithNoDeficiency());
                     this.loanApplication.clearSelectionViewComaker();
                     this.loanApplication.disableComakerFunction();
+                }
+
+                if (isCollateral == 0 && noOfComakers == 0) 
+                {
+                    this.loanApplication.btnComakerNextFunc();
                 }
             }
         }
@@ -487,6 +801,27 @@ namespace CMS.Loan_Management.Transaction.Controller
             {
                 this.loanApplication.btnCollateralPreviousFunc();
                 this.loanApplication.setRowSelectionCollateralErrorFalse();
+            }
+        }
+
+        public void btnComakerNext(object args, EventArgs e) 
+        {
+            this.loanApplication.btnComakerNextFunc();
+        }
+
+        public void btnApprovalPrevious(object args, EventArgs e) 
+        {
+            if (isCollateral == 0 && noOfComakers == 0)
+            {
+                this.loanApplication.btnCollateralPreviousFunc();
+            }
+            else if (isCollateral == 1 && noOfComakers == 0)
+            {
+                this.loanApplication.btnComakerPreviousFunc();
+            }
+            else
+            {
+                this.loanApplication.btnApprovalPreviousFunc();
             }
         }
 
@@ -694,7 +1029,6 @@ namespace CMS.Loan_Management.Transaction.Controller
                 isAddEditComaker = false;
                 isAddCollateral = false;
                 isAddComaker = false;
-                isFixed = false;
                 hasSpouse = false;
                 collateralIndex = 0;
                 comakerIndex = 0;
@@ -707,38 +1041,19 @@ namespace CMS.Loan_Management.Transaction.Controller
                 accountNo = String.Empty;
                 memberName = String.Empty;
 
-                requirements.Clear();
+                charges.Clear();
+                noOfAmortizations = 0;
+                amortizationAmt = 0;
+                maturityDate = DateTime.Now;
             }
         }
         
         public void btnApplyLoan(object args, EventArgs e) 
         {
             this.loanApplication.setAllTpDetailsLabelsToBlack();
-            int countRequired = 0;
             int countError = 0;
-            CheckedListBox.CheckedItemCollection requirementsName1 = this.loanApplication.getCheckedRequirements();
-            Dictionary<string, int> setOfRequirement = new Dictionary<string, int>();
 
             //details validation start
-            foreach (KeyValuePair<int, string> pair in requirements)
-            {
-                setOfRequirement.Add(pair.Value, 0);
-            }
-
-            foreach (String s in requirementsName1)
-            {
-                setOfRequirement[s] += 1;
-            }
-
-            foreach (KeyValuePair<string, int> pair in setOfRequirement)
-            {
-                if (pair.Value == 0)
-                {
-                    if (pair.Key.ToString().Contains("(Required upon application)")) { countRequired++; }
-                }
-            }
-
-            if (countRequired > 0 || requirementsName1.Count == 0) { this.loanApplication.lblRequirementChecklist.ForeColor = Color.Red; countError++; }
             if (this.loanApplication.getCBLoanTypeIndex() == -1) { this.loanApplication.lblLoanType.ForeColor = Color.Red; countError++; }
             if (this.loanApplication.getPurpose() == String.Empty) { this.loanApplication.lblPurpose.ForeColor = Color.Red; countError++; }
             try
@@ -764,11 +1079,6 @@ namespace CMS.Loan_Management.Transaction.Controller
                 this.loanApplication.getTermsOfPayment();
             }
             catch (Exception) { this.loanApplication.lblTerms.ForeColor = Color.Red; countError++; }
-
-            if (this.loanApplication.getIfLoanAgainstDeposit())
-            {
-                if (this.loanApplication.getSourceOfFund() == 0) { this.loanApplication.lblSourceOfFund.ForeColor = Color.Red; countError++; }
-            }
 
             //details validation end
 
@@ -809,36 +1119,6 @@ namespace CMS.Loan_Management.Transaction.Controller
             MessageBox.Show(countError + "");
             if(countError ==0)
             {
-                //insert income start
-                int incomeId = 0;
-
-                double monthlyIncome = this.loanApplication.getMonthlyIncome();
-                double spouseIncome = this.loanApplication.getSpouseIncome();
-                double otherSources = this.loanApplication.getOtherSources();
-                double netMonthlyIncome = this.loanApplication.getNetMonthlyIncome();
-
-                incomeId = this.loanApplicationModel.insertIncome(monthlyIncome, spouseIncome, otherSources, netMonthlyIncome);
-
-                //insert income end
-
-
-                //insert expense start
-                int expenseId = 0;
-
-                double food = this.loanApplication.getFood();
-                double water = this.loanApplication.getWater();
-                double electricity = this.loanApplication.getElectricity();
-                double tuitionfee = this.loanApplication.getTuition();
-                double rent = this.loanApplication.getRent();
-                double transportation = this.loanApplication.getTransportation();
-                double loanRepayment = this.loanApplication.getLoanRepayment();
-                double load = this.loanApplication.getTelephone();
-                double miscellaneuous = this.loanApplication.getMiscellaneous();
-                double monthlyExpense = this.loanApplication.getMonthlyExpense();
-
-                expenseId = this.loanApplicationModel.insertExpense(food, water, electricity, tuitionfee, rent, transportation, loanRepayment, load, miscellaneuous, monthlyExpense);
-
-                //insert expense end
 
 
                 //insert loanapplication start
@@ -846,43 +1126,35 @@ namespace CMS.Loan_Management.Transaction.Controller
                 int loanApplicationId = 0;
 
                 int loanTypeId = this.loanApplication.getTypeOfLoan();
-                Boolean isLoanAgainstDeposit = this.loanApplication.getIfLoanAgainstDeposit();
-                int certificateNo = this.loanApplication.getSourceOfFund(); //pending
                 String purpose = this.loanApplication.getPurpose();
                 String paymentDurationStatus = this.loanApplication.getDurationStatus();
                 int paymentDurationValue = this.loanApplication.getPaymentDurationValue();
                 String terms = this.loanApplication.getTermsOfPayment();
                 double loanAmount = this.loanApplication.getLoanAmount();
+                double approvedAmount = this.loanApplication.getAmount();
+                String dateApproved = this.loanApplication.getDateOfApproval().ToString();
+                String dateMaturity = this.loanApplication.getMaturityDate();
                 String dateFiled = this.loanApplication.getDateOfFiling();
-
-                    //if time deposit
-                if (certificateNo != 0) { this.loanApplicationModel.updateTimeDeposit(certificateNo); }
+                double netLoan = this.loanApplication.getNetLoan();
 
 
-                loanApplicationId = this.loanApplicationModel.insertLoanApplication(finalAccountNo, incomeId, expenseId, loanTypeId, isLoanAgainstDeposit, certificateNo, purpose, paymentDurationStatus, paymentDurationValue, terms, loanAmount, dateFiled);
+                loanApplicationId = this.loanApplicationModel.insertLoanApplication(finalAccountNo, loanTypeId, purpose, paymentDurationStatus, paymentDurationValue, terms, loanAmount, approvedAmount, dateFiled, dateApproved, dateMaturity, netLoan);
+
+                    //loanAmortization
+                DateTime dueDate = this.loanApplication.getDateOfApproval();
+
+                for (int i = 0; i < noOfAmortizations; i++)
+                {
+                    if (terms == "weekly") { dueDate = dueDate.AddDays(7); }
+                    if (terms == "monthly") { dueDate = dueDate.AddMonths(1); }
+                    if (terms == "quarterly") { dueDate = dueDate.AddMonths(4); }
+                    if (terms == "semi-annually") { dueDate = dueDate.AddMonths(6); }
+                    if (terms == "annually") { dueDate = dueDate.AddYears(1); }
+
+                    this.loanApplicationModel.insertLoanAmortization(loanApplicationId, dueDate.ToString("yyyy-MM-dd"), amortizationAmt);
+                }
 
                 //insert loan application end
-
-
-                //insert loan app requirements
-
-                CheckedListBox.CheckedItemCollection requirementsName = this.loanApplication.getCheckedRequirements();
-
-                foreach (KeyValuePair<int, string> pair in requirements)
-                {
-                    this.loanApplicationModel.insertLoanApplicationRequirements(pair.Key, loanApplicationId, false);
-                }
-
-
-                foreach (String s in requirementsName)
-                {
-                    foreach (KeyValuePair<int, string> pair in requirements)
-                    {
-                        if (s.Equals(pair.Value)) { this.loanApplicationModel.updateLoanApplicationRequirements(pair.Key, loanApplicationId); }
-                    }
-                }
-
-                //insert loan app requirements end
 
 
                 //insert collaterals start
@@ -942,7 +1214,6 @@ namespace CMS.Loan_Management.Transaction.Controller
                 isAddCollateral = false;
                 isAddComaker = false;
                 hasSpouse = false;
-                isFixed = false;
                 collateralIndex = 0;
                 comakerIndex = 0;
                 isCollateral = 0;
@@ -954,9 +1225,10 @@ namespace CMS.Loan_Management.Transaction.Controller
                 accountNo = String.Empty;
                 memberName = String.Empty;
 
-                requirements.Clear();
-
-
+                charges.Clear();
+                noOfAmortizations = 0;
+                amortizationAmt = 0;
+                maturityDate = DateTime.Now;
             }
         }//end applyloan
     

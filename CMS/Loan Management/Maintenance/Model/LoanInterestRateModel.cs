@@ -16,7 +16,6 @@ namespace CMS.Loan_Management.Maintenance.Model
         public String InterestRateStatus { get; set; }
         public String Per { get; set; }
         public String DateFrom { get; set; }
-        public String DateTo { get; set; }
         public int Status { get; set; }
 
         public LoanInterestRateModel()
@@ -26,7 +25,6 @@ namespace CMS.Loan_Management.Maintenance.Model
             this.InterestRateStatus = String.Empty;
             this.Per = String.Empty;
             this.DateFrom = String.Empty;
-            this.DateTo = String.Empty;
             this.Status = 0;
         }
 
@@ -58,56 +56,39 @@ namespace CMS.Loan_Management.Maintenance.Model
         public DataSet selectInterestRates()
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "SELECT LOAN_TYPE.LoanTypeId as 'Loan Type Id', LOAN_TYPE.LoanTypeName as 'Loan Type Name', concat(LOAN_INTEREST_RATE.InterestRateValue,' ',LOAN_INTEREST_RATE.InterestRateStatus) as 'Interest Rate', LOAN_INTEREST_RATE.Per as 'Duration', LOAN_INTEREST_RATE.StartDate as 'Start Date', LOAN_INTEREST_RATE.EndDate as 'End Date', LOAN_INTEREST_RATE.Status as 'Active' from LOAN_INTEREST_RATE, LOAN_TYPE WHERE LOAN_INTEREST_RATE.LoanTypeId=LOAN_TYPE.LoanTypeId";
+            String sql = "SELECT LOAN_INTEREST_RATE.LoanTypeId as 'Loan Type Id', LOAN_TYPE.LoanTypeName as 'Loan Type Name', concat(LOAN_INTEREST_RATE.InterestRateValue,' ',LOAN_INTEREST_RATE.InterestRateStatus) as 'Interest Rate', LOAN_INTEREST_RATE.Per as 'Duration', LOAN_INTEREST_RATE.ActivationDate as 'Activation Date', LOAN_INTEREST_RATE.Status as 'Active', LOAN_INTEREST_RATE.isArchived from LOAN_INTEREST_RATE, LOAN_TYPE WHERE LOAN_INTEREST_RATE.LoanTypeId=LOAN_TYPE.LoanTypeId and LOAN_INTEREST_RATE.isArchived = 0;";
             DataSet ds = dal.executeDataSet(sql);
             return ds;
         }
 
-        public DataSet searchInterestRates(String searchName)
+        public DataSet selectAllInterestRates()
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "SELECT LOAN_TYPE.LoanTypeId, LOAN_TYPE.LoanTypeName, LOAN_INTEREST_RATE.InterestRateStatus, LOAN_INTEREST_RATE.InterestRateValue, LOAN_INTEREST_RATE.Per, LOAN_INTEREST_RATE.StartDate, LOAN_INTEREST_RATE.EndDate, LOAN_INTEREST_RATE.Status, LOAN_INTEREST_RATE.DateCreated, LOAN_INTEREST_RATE.DateModified from LOAN_INTEREST_RATE, LOAN_TYPE WHERE LOAN_INTEREST_RATE.LoanTypeId=LOAN_TYPE.LoanTypeId AND LOAN_TYPE.LoanTypeName=@searchName";
-            Dictionary<String, Object> parameters = new Dictionary<string, object>();
-            searchName = "%" + searchName + "%";
-            parameters.Add("@searchName", searchName);
-            DataSet ds = dal.executeDataSet(sql, parameters);
+            String sql = "SELECT LOAN_INTEREST_RATE.LoanTypeId as 'Loan Type Id', LOAN_TYPE.LoanTypeName as 'Loan Type Name', concat(LOAN_INTEREST_RATE.InterestRateValue,' ',LOAN_INTEREST_RATE.InterestRateStatus) as 'Interest Rate', LOAN_INTEREST_RATE.Per as 'Duration', LOAN_INTEREST_RATE.ActivationDate as 'Activation Date', LOAN_INTEREST_RATE.Status as 'Active', LOAN_INTEREST_RATE.isArchived from LOAN_INTEREST_RATE, LOAN_TYPE WHERE LOAN_INTEREST_RATE.LoanTypeId=LOAN_TYPE.LoanTypeId";
+            DataSet ds = dal.executeDataSet(sql);
             return ds;
         }
 
-        public int insertInterestRate()
+
+        public void insertInterestRate()
         {
             DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC insertLoanInterestRate @LoanTypeId, @InterestRateStatus, @InterestRateValue, @Per, @StartDate, @EndDate, @Status";
+
+            String updateSql = "Update LOAN_INTEREST_RATE set isArchived = 1 where LoanTypeId = " + "'" + this.LoanTypeId + "'";
+            dal.executeScalar(updateSql);
+
+            String sql = "EXEC insertLoanInterestRate @LoanTypeId, @InterestRateStatus, @InterestRateValue, @Per, @ActivationDate, @Status";
             Dictionary<String, Object> parameters = new Dictionary<string, object>();
 
             parameters.Add("@LoanTypeId", this.LoanTypeId);
             parameters.Add("@InterestRateStatus", this.InterestRateStatus);
             parameters.Add("@InterestRateValue", this.InterestRate);
             parameters.Add("@Per", this.Per);
-            parameters.Add("@StartDate", this.DateFrom);
-            parameters.Add("@EndDate", this.DateTo);        
+            parameters.Add("@ActivationDate", this.DateFrom);        
             parameters.Add("@Status", this.Status);
-            int result = Convert.ToInt32(dal.executeNonQuery(sql, parameters));
-            return result;
+            dal.executeNonQuery(sql, parameters);
 
         }
 
-        public int updateInterestRate(int TypeId)
-        {
-           
-            DAL dal = new DAL(ConfigurationManager.ConnectionStrings["CMS"].ConnectionString);
-            String sql = "EXEC updateLoanInterestRate @LoanTypeId, @InterestRateStatus, @InterestRateValue, @Per, @StartDate, @EndDate, @Status";
-            Dictionary<String, Object> parameters = new Dictionary<string, object>();
-              parameters.Add("@LoanTypeId", TypeId);
-              parameters.Add("@InterestRateStatus", this.InterestRateStatus);
-              parameters.Add("@InterestRateValue", this.InterestRate);
-              parameters.Add("@Per", this.Per);
-              parameters.Add("@StartDate", this.DateFrom);
-              parameters.Add("@EndDate", this.DateTo);
-              parameters.Add("@Status", this.Status);
-            int result = Convert.ToInt32(dal.executeNonQuery(sql, parameters));
-            return result;
-             
-        }
     }
 }

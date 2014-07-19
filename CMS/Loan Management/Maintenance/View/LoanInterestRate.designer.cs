@@ -30,12 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             this.cbLoanType = new System.Windows.Forms.ComboBox();
-            this.endDate = new System.Windows.Forms.DateTimePicker();
             this.startDate = new System.Windows.Forms.DateTimePicker();
-            this.lblTo = new System.Windows.Forms.Label();
             this.txtInterest = new System.Windows.Forms.TextBox();
             this.contextMenuBlank = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.lblFrom = new System.Windows.Forms.Label();
             this.lblPer = new System.Windows.Forms.Label();
             this.cbDuration = new System.Windows.Forms.ComboBox();
             this.cbInterestStatus = new System.Windows.Forms.ComboBox();
@@ -50,6 +47,7 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnEdit = new System.Windows.Forms.Button();
+            this.cbShowArchive = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataInterest)).BeginInit();
             this.gbInterest.SuspendLayout();
             this.gbInclusiveDates.SuspendLayout();
@@ -65,36 +63,14 @@
             this.cbLoanType.Size = new System.Drawing.Size(195, 28);
             this.cbLoanType.TabIndex = 5;
             // 
-            // endDate
-            // 
-            this.endDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.endDate.Location = new System.Drawing.Point(217, 28);
-            this.endDate.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.endDate.Name = "endDate";
-            this.endDate.Size = new System.Drawing.Size(122, 27);
-            this.endDate.TabIndex = 11;
-            // 
             // startDate
             // 
             this.startDate.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.startDate.Location = new System.Drawing.Point(56, 28);
+            this.startDate.Location = new System.Drawing.Point(105, 28);
             this.startDate.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.startDate.Name = "startDate";
             this.startDate.Size = new System.Drawing.Size(122, 27);
             this.startDate.TabIndex = 10;
-            this.startDate.ValueChanged += new System.EventHandler(this.startDate_ValueChanged);
-            this.startDate.TabIndexChanged += new System.EventHandler(this.startDate_TabIndexChanged);
-            // 
-            // lblTo
-            // 
-            this.lblTo.AutoSize = true;
-            this.lblTo.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTo.Location = new System.Drawing.Point(186, 33);
-            this.lblTo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblTo.Name = "lblTo";
-            this.lblTo.Size = new System.Drawing.Size(23, 20);
-            this.lblTo.TabIndex = 19;
-            this.lblTo.Text = "to";
             // 
             // txtInterest
             // 
@@ -112,17 +88,6 @@
             // 
             this.contextMenuBlank.Name = "contextMenuBlank";
             this.contextMenuBlank.Size = new System.Drawing.Size(61, 4);
-            // 
-            // lblFrom
-            // 
-            this.lblFrom.AutoSize = true;
-            this.lblFrom.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFrom.Location = new System.Drawing.Point(7, 33);
-            this.lblFrom.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblFrom.Name = "lblFrom";
-            this.lblFrom.Size = new System.Drawing.Size(41, 20);
-            this.lblFrom.TabIndex = 20;
-            this.lblFrom.Text = "from";
             // 
             // lblPer
             // 
@@ -196,6 +161,9 @@
             this.dataInterest.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataInterest.Size = new System.Drawing.Size(678, 171);
             this.dataInterest.TabIndex = 1;
+            this.dataInterest.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataInterest_CellClick);
+            this.dataInterest.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataInterest_KeyDown);
+            this.dataInterest.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dataInterest_KeyUp);
             // 
             // btnAdd
             // 
@@ -248,15 +216,12 @@
             // gbInclusiveDates
             // 
             this.gbInclusiveDates.Controls.Add(this.startDate);
-            this.gbInclusiveDates.Controls.Add(this.lblFrom);
-            this.gbInclusiveDates.Controls.Add(this.endDate);
-            this.gbInclusiveDates.Controls.Add(this.lblTo);
             this.gbInclusiveDates.Location = new System.Drawing.Point(322, 65);
             this.gbInclusiveDates.Name = "gbInclusiveDates";
             this.gbInclusiveDates.Size = new System.Drawing.Size(349, 74);
             this.gbInclusiveDates.TabIndex = 9;
             this.gbInclusiveDates.TabStop = false;
-            this.gbInclusiveDates.Text = "Inclusive Dates";
+            this.gbInclusiveDates.Text = "Activation Date";
             // 
             // chbStatus
             // 
@@ -301,11 +266,23 @@
             this.btnEdit.Text = "&Edit";
             this.btnEdit.UseVisualStyleBackColor = true;
             // 
+            // cbShowArchive
+            // 
+            this.cbShowArchive.AutoSize = true;
+            this.cbShowArchive.BackColor = System.Drawing.Color.Yellow;
+            this.cbShowArchive.Location = new System.Drawing.Point(13, 199);
+            this.cbShowArchive.Name = "cbShowArchive";
+            this.cbShowArchive.Size = new System.Drawing.Size(131, 25);
+            this.cbShowArchive.TabIndex = 48;
+            this.cbShowArchive.Text = "Show Archives";
+            this.cbShowArchive.UseVisualStyleBackColor = false;
+            // 
             // LoanInterestRate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(704, 473);
+            this.Controls.Add(this.cbShowArchive);
             this.Controls.Add(this.gbInterest);
             this.Controls.Add(this.dataInterest);
             this.Controls.Add(this.btnAdd);
@@ -320,18 +297,15 @@
             this.gbInterest.ResumeLayout(false);
             this.gbInterest.PerformLayout();
             this.gbInclusiveDates.ResumeLayout(false);
-            this.gbInclusiveDates.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.DateTimePicker endDate;
         private System.Windows.Forms.DateTimePicker startDate;
-        private System.Windows.Forms.Label lblTo;
         private System.Windows.Forms.TextBox txtInterest;
-        private System.Windows.Forms.Label lblFrom;
         private System.Windows.Forms.ComboBox cbDuration;
         private System.Windows.Forms.ComboBox cbInterestStatus;
         private System.Windows.Forms.Button btnAdd;
@@ -348,5 +322,6 @@
         public System.Windows.Forms.Label lblInterestRate;
         public System.Windows.Forms.DataGridView dataInterest;
         public System.Windows.Forms.ComboBox cbLoanType;
+        private System.Windows.Forms.CheckBox cbShowArchive;
     }
 }

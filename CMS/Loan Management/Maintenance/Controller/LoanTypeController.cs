@@ -110,30 +110,13 @@ namespace CMS.Loan_Management.Maintenance.Controller
                     String Deduction = selectedData.Cells["Deduction"].Value.ToString();
                     int coMaker = int.Parse(selectedData.Cells["CoMaker"].Value.ToString());
 
-                    bool Fixed = bool.Parse(selectedData.Cells["isFixed"].Value.ToString());
                     bool Collateral = bool.Parse(selectedData.Cells["isCollateral"].Value.ToString());
-                    bool CurrentUnpaid = bool.Parse(selectedData.Cells["isCurrentUnpaid"].Value.ToString());
-                    bool PreviousUnpaid = bool.Parse(selectedData.Cells["isPreviousUnpaid"].Value.ToString());
                     bool Status = bool.Parse(selectedData.Cells["Active"].Value.ToString());
 
-
-                    if (Fixed) {
-                        this.loanType.setFixed();
-                    }
 
                     if (Collateral)
                     {
                         this.loanType.setCollateral();
-                    }
-
-                    if (CurrentUnpaid)
-                    {
-                        this.loanType.setCurrent();
-                    }
-
-                    if (PreviousUnpaid)
-                    {
-                        this.loanType.setPrevious();
                     }
 
 
@@ -218,7 +201,7 @@ namespace CMS.Loan_Management.Maintenance.Controller
             
         }
         public void btnSave(object args, EventArgs e) {
-            int Status = 0, Fixed=0, Collateral=0, Current=0, Previous=0;
+            int Status = 0, Collateral=0;
             this.loanType.setAllLabelsToBlack();
 
             String errorMessage = String.Empty;
@@ -247,25 +230,12 @@ namespace CMS.Loan_Management.Maintenance.Controller
                 }
             }
 
-            if (loanType.getFixed())
-            {
-                Fixed = 1;
-            }
 
             if (loanType.getCollateral())
             {
                 Collateral = 1;
             }
 
-            if (loanType.getPrevious())
-            {
-                Previous = 1;
-            }
-
-            if (loanType.getCurrent())
-            {
-               Current = 1;
-            }
             
             if (loanType.getStatus())
             {
@@ -283,13 +253,13 @@ namespace CMS.Loan_Management.Maintenance.Controller
                 if (isAdd)
                 {
 
-                    if (!(bool.Parse(this.loanType.dataGridView.Rows[i].Cells[12].Value.ToString())) && instaName.Equals(compareName, StringComparison.InvariantCultureIgnoreCase))
+                    if (!(bool.Parse(this.loanType.dataGridView.Rows[i].Cells[9].Value.ToString())) && instaName.Equals(compareName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         checkExist = 1;
                     }
                 }
                 else {
-                    if (!(bool.Parse(this.loanType.dataGridView.Rows[i].Cells[12].Value.ToString())) && nameCopy != this.loanType.dataGridView.Rows[i].Cells[1].Value.ToString() && instaName.Equals(compareName, StringComparison.InvariantCultureIgnoreCase))
+                    if (!(bool.Parse(this.loanType.dataGridView.Rows[i].Cells[9].Value.ToString())) && nameCopy != this.loanType.dataGridView.Rows[i].Cells[1].Value.ToString() && instaName.Equals(compareName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         checkExist = 1;
                     }
@@ -316,14 +286,11 @@ namespace CMS.Loan_Management.Maintenance.Controller
             }
             catch (Exception) { countError++; errorMessage += countError + ". Please specify maximum payment duration status.\n"; this.loanType.lblMaximumPaymentDur.ForeColor = System.Drawing.Color.Red; }
 
-            if (Fixed == 0)
+            try
             {
-                try
-                {
-                    this.loanAccountTypeModel.MaxAmtStatus = this.loanType.getMaximumAmountStatus();
-                }
-                catch (Exception) { countError++; errorMessage += countError + ". Please specify maximum loanable amount mode.\n"; this.loanType.lblMaxLoanableAmt.ForeColor = System.Drawing.Color.Red; }
+                this.loanAccountTypeModel.MaxAmtStatus = this.loanType.getMaximumAmountStatus();
             }
+            catch (Exception) { countError++; errorMessage += countError + ". Please specify maximum loanable amount mode.\n"; this.loanType.lblMaxLoanableAmt.ForeColor = System.Drawing.Color.Red; }
 
             if (this.loanType.getDeductionStatus())
             {
@@ -364,9 +331,6 @@ namespace CMS.Loan_Management.Maintenance.Controller
             }
 
 
-
-            if (Fixed == 0)
-            {
                 try
                 {
                     this.loanAccountTypeModel.MaxAmt = this.loanType.getMaximumAmount();
@@ -375,18 +339,17 @@ namespace CMS.Loan_Management.Maintenance.Controller
                     {
                         countError++; errorMessage += countError + ". Please specify maximum loanable amount.\n"; this.loanType.lblMaxLoanableAmt.ForeColor = System.Drawing.Color.Red;
                     }
-                    if (this.loanAccountTypeModel.MaxAmt > 500 && this.loanAccountTypeModel.MaxAmtStatus == "%")
+                    if (this.loanAccountTypeModel.MaxAmt > 50 && this.loanAccountTypeModel.MaxAmtStatus == "Times")
                     {
-                        countError++; errorMessage += countError + ". Maximum percentage loanable amount is 500%.\n"; this.loanType.lblMaxLoanableAmt.ForeColor = System.Drawing.Color.Red;
+                        countError++; errorMessage += countError + ". Maximum percentage loanable amount is 50 times.\n"; this.loanType.lblMaxLoanableAmt.ForeColor = System.Drawing.Color.Red;
                     }
                 }
                 catch (FormatException) { countError++; errorMessage += countError + ". Please specify maximum loanable amount.\n"; this.loanType.lblMaxLoanableAmt.ForeColor = System.Drawing.Color.Red; }
 
-            }
 
                 if (isAdd)
                 {
-                    if (countError==0 && this.loanAccountTypeModel.insertLoanType(memberTypeNo, Fixed, Collateral, Current, Previous, Status) == 1)
+                    if (countError==0 && this.loanAccountTypeModel.insertLoanType(memberTypeNo, Collateral, Status) == 1)
                     {
                         MessageBox.Show("Add Success.", "Add Loan Type", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         if (this.loanType.checkArchivedState())
@@ -422,7 +385,7 @@ namespace CMS.Loan_Management.Maintenance.Controller
                 }
                 else
                 {
-                    if (countError==0 && this.loanAccountTypeModel.updateLoanType(TypeId, memberTypeNo, Fixed, Collateral, Current, Previous, Status) == 1)
+                    if (countError==0 && this.loanAccountTypeModel.updateLoanType(TypeId, memberTypeNo, Collateral, Status) == 1)
                     {
                         MessageBox.Show("Update Success.", "Update Loan Type", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         if (this.loanType.checkArchivedState())
@@ -499,7 +462,7 @@ namespace CMS.Loan_Management.Maintenance.Controller
             {
                 String compareName = Regex.Replace(this.loanType.dataGridView.Rows[i].Cells[1].Value.ToString(), @"[^0-9a-zA-Z]+", String.Empty);
 
-                if (!(bool.Parse(this.loanType.dataGridView.Rows[i].Cells[12].Value.ToString())) && instaName.Equals(compareName, StringComparison.InvariantCultureIgnoreCase))
+                if (!(bool.Parse(this.loanType.dataGridView.Rows[i].Cells[9].Value.ToString())) && instaName.Equals(compareName, StringComparison.InvariantCultureIgnoreCase))
                 {
                     checkExist = 1;
                 }

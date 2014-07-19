@@ -191,6 +191,10 @@ namespace CMS.Main.View
         {
             this.dataAmortization.DataSource = ds.Tables[0];
             this.dataAmortization.Columns[4].Visible = false;
+            this.dataAmortization.Columns[0].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            this.dataAmortization.Columns[1].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            this.dataAmortization.Columns[2].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            this.dataAmortization.Columns[3].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
         }
 
         public DataGridViewRow getSelected()

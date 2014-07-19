@@ -35,16 +35,10 @@ namespace CMS.Loan_Management.Maintenance.View
             cbDeduction.Enabled = false;
             comakersUD.Value = 0;
             comakersUD.Enabled = false;
-            chbFixed.CheckState = CheckState.Unchecked;
-            chbFixed.Enabled = false;
             cbAmtStatus.SelectedIndex = -1;
             cbAmtStatus.Enabled = false;
             chbCollateral.CheckState = CheckState.Unchecked;
             chbCollateral.Enabled = false;
-            chbPrevious.CheckState = CheckState.Unchecked;
-            chbPrevious.Enabled = false;
-            chbCurrent.CheckState = CheckState.Unchecked;
-            chbCurrent.Enabled = false;
             chbStatus.CheckState = CheckState.Unchecked;
             chbStatus.Enabled = false;
             clbMemberType.Enabled = false;
@@ -79,14 +73,8 @@ namespace CMS.Loan_Management.Maintenance.View
             cbDeduction.Enabled = false;
             comakersUD.Value = 0;
             comakersUD.Enabled = true;
-            chbFixed.CheckState = CheckState.Unchecked;
-            chbFixed.Enabled = true;
             chbCollateral.CheckState = CheckState.Unchecked;
             chbCollateral.Enabled = true;
-            chbPrevious.CheckState = CheckState.Unchecked;
-            chbPrevious.Enabled = true;
-            chbCurrent.CheckState = CheckState.Unchecked;
-            chbCurrent.Enabled = true;
             chbStatus.Enabled = true;
             clbMemberType.Enabled = true;
 
@@ -280,23 +268,6 @@ namespace CMS.Loan_Management.Maintenance.View
             return int.Parse(this.comakersUD.Value.ToString());
         }
 
-        public void setFixed()
-        {
-            this.chbFixed.CheckState = CheckState.Checked;
-        }
-
-        public Boolean getFixed()
-        {
-            if (this.chbFixed.CheckState == CheckState.Checked)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public void setCollateral()
         {
             this.chbCollateral.CheckState = CheckState.Checked;
@@ -325,40 +296,6 @@ namespace CMS.Loan_Management.Maintenance.View
             clbMemberType.Items.Add(loanTypes);
         }
 
-        public void setPrevious()
-        {
-            this.chbPrevious.CheckState = CheckState.Checked;
-        }
-
-        public Boolean getPrevious()
-        {
-            if (this.chbPrevious.CheckState == CheckState.Checked)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            } 
-        }
-
-        public void setCurrent()
-        {
-            this.chbCurrent.CheckState = CheckState.Checked;
-        }
-
-        public Boolean getCurrent()
-        {
-            if (this.chbCurrent.CheckState == CheckState.Checked)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public void setStatus()
         {
             this.chbStatus.CheckState = CheckState.Checked;
@@ -380,7 +317,7 @@ namespace CMS.Loan_Management.Maintenance.View
         {
             this.dataGridView.DataSource = ds.Tables[0];
             this.dataGridView.Columns[0].Visible = false;
-            this.dataGridView.Columns[12].Visible = false;
+            this.dataGridView.Columns[9].Visible = false;
         }
 
         public DataGridViewRow getSelected()
@@ -565,27 +502,13 @@ namespace CMS.Loan_Management.Maintenance.View
         {
             try
             {
-                if (cbAmtStatus.SelectedItem.ToString() == "%") { this.enableDeduction(); }
+                if (cbAmtStatus.SelectedItem.ToString() == "Times") { this.enableDeduction(); }
                 else { this.disableDeduction(); }
             }
             catch (Exception) { }
         }
 
-        private void chbFixed_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chbFixed.Checked == true)
-            {
-                this.txtMaxAmt.Enabled = false;
-                this.txtMaxAmt.Clear();
-                this.cbAmtStatus.Enabled = false;
-                this.cbAmtStatus.SelectedIndex = -1;
-            }
-            else 
-            {
-                this.txtMaxAmt.Enabled = true;
-                this.cbAmtStatus.Enabled = true;
-            }
-        }
+
 
     }
 }
