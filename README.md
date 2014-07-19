@@ -1,6 +1,6 @@
 cms
 ============================================================
-Cooperative Management System
+Cooperative Management System Source Code
 this repo is for student purposes only
 ============================================================
 WHAT'S WORKING
